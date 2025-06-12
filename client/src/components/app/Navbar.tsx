@@ -1,8 +1,9 @@
 import { Button } from "@/components/ui/button";
+import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 
 const Navbar = () => {
-  const userId = false;
+  const userUid = useSelector((state: any) => state.user.currentUserUid);
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -23,7 +24,7 @@ const Navbar = () => {
           <span className="font-bold text-emerald-600">LocalLoop</span>
         </div>
         <nav className="flex items-center space-x-6">
-          {userId ? (
+          {userUid ? (
             <>
               <Link to="/dashboard">
                 <Button variant="ghost">Dashboard</Button>

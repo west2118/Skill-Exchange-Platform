@@ -10,6 +10,7 @@ dotenv.config();
 const app = express();
 
 import authRoutes from "./routes/authRoutes.js";
+import userRoutes from "./routes/userRoutes.js";
 
 const require = createRequire(import.meta.url);
 const serviceAccount = require("./serviceAccountKey.json");
@@ -39,3 +40,4 @@ mongoose
   .catch((err) => console.log(err));
 
 app.use("/api/", authRoutes);
+app.use("/api/", userRoutes);

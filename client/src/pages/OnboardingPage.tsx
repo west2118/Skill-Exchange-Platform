@@ -5,13 +5,14 @@ import { publicApi } from "@/utils/axios";
 import LocationStep from "@/components/app/LocationStep";
 import SkillOfferStep from "@/components/app/SkillOfferStep";
 import SkillSeekStep from "@/components/app/SkillSeekStep";
+import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
-import { createUserWithEmailAndPassword } from "firebase/auth";
-import { auth, db } from "../firebase";
-import { getFirestore, doc, setDoc } from "firebase/firestore";
 
 export default function OnboardingPage() {
-  const credentials = useSelector((state: any) => state.register.credentials);
+  const navigate = useNavigate();
+  const currentUserToken = useSelector(
+    (state: any) => state.user.currentUserToken
+  );
   const [step, setStep] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
   const [currentAddress, setCurrentAddress] = useState("");
@@ -89,45 +90,39 @@ export default function OnboardingPage() {
     }
   };
 
-  const prevStep = () => setStep((prev) => Math.max(prev - 1, 1));
-  const nextStep = () => setStep((prev) => Math.min(prev + 1, 3));
-
   const handleCompleteProfile = async () => {
+    const addedData = {
+      location: {
+        zip: zipCode,
+        address: currentAddress,
+      },
+      offeredSkills: selectedOfferSkills,
+      seekedSkills: selectedSeekSkills,
+    };
+
     try {
-      console.log(credentials.email, credentials.password);
-
-      const addedData = {
-        firstName: credentials.firstName,
-        lastName: credentials.lastName,
-        location: {
-          zip: zipCode,
-          address: currentAddress,
+      await publicApi.post(
+        "http://localhost:8080/api/user-profile",
+        {
+          ...addedData,
         },
-        offeredSkills: selectedOfferSkills,
-        seekedSkills: selectedSeekSkills,
-      };
-
-      console.log("Writing to Firestore:", {
-        ...addedData,
-        email: credentials.email,
-      });
-
-      const userCredentials = await createUserWithEmailAndPassword(
-        auth,
-        credentials.email,
-        credentials.password
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${currentUserToken}`,
+          },
+        }
       );
-      console.log("User signed up:", userCredentials.user);
-      const uid = userCredentials.user.uid;
 
-      await setDoc(doc(db, "users", uid), {
-        ...addedData,
-        email: credentials.email,
-      });
+      toast.success("Created Account Successfully!");
+      navigate("/profile");
     } catch (error: any) {
       toast.error(error.message);
     }
   };
+
+  const prevStep = () => setStep((prev) => Math.max(prev - 1, 1));
+  const nextStep = () => setStep((prev) => Math.min(prev + 1, 3));
 
   return (
     <div className="min-h-[93vh] flex items-center justify-center bg-gradient-to-b from-gray-50 to-gray-100">

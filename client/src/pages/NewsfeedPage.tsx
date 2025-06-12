@@ -22,6 +22,7 @@ import { Bell as BellIcon } from "lucide-react";
 import { Search as SearchIcon } from "lucide-react";
 import { MapPin as MapPinIcon } from "lucide-react";
 import { Filter as FilterIcon } from "lucide-react";
+import { Link } from "react-router-dom";
 
 export default function NewsfeedPage() {
   // Fake data
@@ -223,9 +224,11 @@ export default function NewsfeedPage() {
               <FilterIcon className="mr-2 h-4 w-4" />
               Filters
             </Button>
-            <Button className="bg-emerald-600 hover:bg-emerald-700">
-              + New Exchange
-            </Button>
+            <Link to="/create-exchange">
+              <Button className="bg-emerald-600 hover:bg-emerald-700">
+                + New Exchange
+              </Button>
+            </Link>
           </div>
         </div>
 

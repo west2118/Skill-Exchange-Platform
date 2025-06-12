@@ -11,12 +11,9 @@ import { Input } from "../ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
-import { skills } from "@/utils/skills";
+import { skills } from "@/constants/skills";
 import type { FC } from "react";
 import { toast } from "react-toastify";
-import { useNavigate } from "react-router-dom";
-import { useDispatch } from "react-redux";
-import { toResetState } from "@/store/registerSlice";
 
 type SkillSeekStepProps = {
   selectedSeekSkills: string[];
@@ -43,15 +40,12 @@ const SkillSeekStep: FC<SkillSeekStepProps> = ({
   prevStep,
   handleCompleteProfile,
 }) => {
-  const navigate = useNavigate();
-
   const handleCreateUser = () => {
     if (selectedSeekSkills.length === 0) {
       return toast.error("Seeked skill can't be empty");
     }
 
     handleCompleteProfile();
-    navigate("/profile");
   };
 
   return (

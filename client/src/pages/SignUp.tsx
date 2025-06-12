@@ -9,14 +9,14 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { toAddCredentials } from "@/store/registerSlice";
+import { auth } from "@/firebase";
+import { publicApi } from "@/utils/axios";
+import { createUserWithEmailAndPassword } from "firebase/auth";
 import { useState } from "react";
-import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
 export default function SignUp() {
-  const dispatch = useDispatch();
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     firstName: "",
@@ -35,7 +35,7 @@ export default function SignUp() {
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     if (Object.values(formData).some((value) => value.trim() === "")) {
@@ -46,8 +46,34 @@ export default function SignUp() {
       return toast.error("Password didn't match");
     }
 
-    dispatch(toAddCredentials(formData));
-    navigate("/onboarding");
+    try {
+      const userCredentials = await createUserWithEmailAndPassword(
+        auth,
+        formData.email,
+        formData.password
+      );
+
+      const token = await userCredentials.user.getIdToken();
+
+      await publicApi.post(
+        "http://localhost:8080/api/user-profile",
+        {
+          firstName: formData.firstName,
+          lastName: formData.lastName,
+          email: formData.email,
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      navigate("/onboarding");
+    } catch (error: any) {
+      toast.error(error.message);
+    }
   };
 
   return (

@@ -19,8 +19,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useSelector } from "react-redux";
+import { formatDate } from "@/constants/formatDate";
+import SkillCard from "@/components/app/SkillCard";
 
 export default function UserProfilePage() {
+  const userUid = useSelector((state: any) => state.user.currentUserUid);
+  const users = useSelector((state: any) => state.user.users);
+
+  const user = users.find((user: any) => user.uid === userUid);
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100">
       {/* Main Content */}
@@ -31,38 +39,27 @@ export default function UserProfilePage() {
             {/* Profile Card */}
             <Card>
               <CardHeader className="items-center text-center">
-                <Avatar className="h-24 w-24 mb-4">
-                  <AvatarImage src="/avatars/user.jpg" />
-                  <AvatarFallback>YO</AvatarFallback>
-                </Avatar>
-                <CardTitle>Your Name</CardTitle>
-                <CardDescription>Member since June 2023</CardDescription>
-                <Badge className="mt-2 bg-emerald-100 text-emerald-800">
-                  Verified Member
-                </Badge>
+                <div className="flex justify-center mb-4">
+                  <Avatar className="h-24 w-24">
+                    <AvatarFallback>{`${user?.firstName.slice(
+                      0,
+                      1
+                    )}${user?.lastName.slice(0, 1)}`}</AvatarFallback>
+                  </Avatar>
+                </div>
+                <CardTitle>{`${user?.firstName} ${user?.lastName}`}</CardTitle>
+                <CardDescription>
+                  Member since {formatDate(user?.createdAt)}
+                </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="space-y-2">
                   <Label>Location</Label>
-                  <p className="font-medium">New York, NY</p>
-                  <p className="text-sm text-gray-600">
-                    Within 5 miles of 10001
-                  </p>
-                </div>
-                <div className="space-y-2">
-                  <Label>LocalLoop Points</Label>
-                  <div className="flex items-center space-x-2">
-                    <Progress value={65} className="h-2" />
-                    <span className="text-sm font-medium">65/100</span>
-                  </div>
-                  <p className="text-sm text-gray-600">
-                    Earn 35 more points for your next badge
-                  </p>
+                  <p className="font-medium">{user?.location?.address}</p>
                 </div>
                 <div className="space-y-2">
                   <Label>Contact</Label>
-                  <p className="font-medium">your.email@example.com</p>
-                  <p className="text-sm text-gray-600">Phone: (555) 123-4567</p>
+                  <p className="font-medium">{user?.email}</p>
                 </div>
               </CardContent>
               <CardFooter className="flex justify-center">
@@ -70,120 +67,6 @@ export default function UserProfilePage() {
                   Edit Profile
                 </Button>
               </CardFooter>
-            </Card>
-
-            {/* Badges Card */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Your Badges</CardTitle>
-                <CardDescription>
-                  Earned through skill exchanges
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="grid grid-cols-3 gap-4">
-                <div className="flex flex-col items-center">
-                  <div className="h-10 w-10 flex items-center justify-center rounded-full bg-yellow-100 text-yellow-600">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="16"
-                      height="16"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round">
-                      <circle cx="12" cy="8" r="7"></circle>
-                      <polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"></polyline>
-                    </svg>
-                  </div>
-                  <span className="mt-2 text-xs text-center">
-                    First Exchange
-                  </span>
-                </div>
-                <div className="flex flex-col items-center">
-                  <div className="h-10 w-10 flex items-center justify-center rounded-full bg-blue-100 text-blue-600">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="16"
-                      height="16"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round">
-                      <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
-                      <polyline points="22 4 12 14.01 9 11.01"></polyline>
-                    </svg>
-                  </div>
-                  <span className="mt-2 text-xs text-center">
-                    Trusted Member
-                  </span>
-                </div>
-                <div className="flex flex-col items-center">
-                  <div className="h-10 w-10 flex items-center justify-center rounded-full bg-purple-100 text-purple-600">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="16"
-                      height="16"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round">
-                      <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path>
-                    </svg>
-                  </div>
-                  <span className="mt-2 text-xs text-center">Skill Sharer</span>
-                </div>
-                <div className="flex flex-col items-center">
-                  <div className="h-10 w-10 flex items-center justify-center rounded-full bg-green-100 text-green-600">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="16"
-                      height="16"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round">
-                      <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-                      <circle cx="9" cy="7" r="4"></circle>
-                      <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
-                      <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
-                    </svg>
-                  </div>
-                  <span className="mt-2 text-xs text-center">
-                    Community Builder
-                  </span>
-                </div>
-                <div className="flex flex-col items-center">
-                  <div className="h-10 w-10 flex items-center justify-center rounded-full bg-red-100 text-red-600">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="16"
-                      height="16"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round">
-                      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
-                    </svg>
-                  </div>
-                  <span className="mt-2 text-xs text-center">Top Rated</span>
-                </div>
-                <div className="flex flex-col items-center">
-                  <div className="h-10 w-10 flex items-center justify-center rounded-full bg-gray-100 text-gray-600">
-                    <span className="text-xs font-bold">+3</span>
-                  </div>
-                  <span className="mt-2 text-xs text-center">More Badges</span>
-                </div>
-              </CardContent>
             </Card>
           </div>
 
@@ -204,30 +87,13 @@ export default function UserProfilePage() {
                     <div className="flex items-center justify-between">
                       <Label className="text-emerald-600">Skills Offered</Label>
                       <Button variant="ghost" size="sm">
-                        + Add
+                        + Edit
                       </Button>
                     </div>
                     <div className="space-y-3">
-                      <div className="flex items-center justify-between p-3 bg-gray-50 rounded">
-                        <span className="font-medium">
-                          Spanish Conversation Practice
-                        </span>
-                        <Button variant="ghost" size="sm">
-                          Edit
-                        </Button>
-                      </div>
-                      <div className="flex items-center justify-between p-3 bg-gray-50 rounded">
-                        <span className="font-medium">Website Development</span>
-                        <Button variant="ghost" size="sm">
-                          Edit
-                        </Button>
-                      </div>
-                      <div className="flex items-center justify-between p-3 bg-gray-50 rounded">
-                        <span className="font-medium">Gardening Help</span>
-                        <Button variant="ghost" size="sm">
-                          Edit
-                        </Button>
-                      </div>
+                      {user?.offeredSkills?.map((skill: string) => (
+                        <SkillCard key={skill} skill={skill} />
+                      ))}
                     </div>
                   </div>
 
@@ -236,28 +102,13 @@ export default function UserProfilePage() {
                     <div className="flex items-center justify-between">
                       <Label className="text-emerald-600">Skills Needed</Label>
                       <Button variant="ghost" size="sm">
-                        + Add
+                        + Edit
                       </Button>
                     </div>
                     <div className="space-y-3">
-                      <div className="flex items-center justify-between p-3 bg-gray-50 rounded">
-                        <span className="font-medium">Bicycle Repair</span>
-                        <Button variant="ghost" size="sm">
-                          Edit
-                        </Button>
-                      </div>
-                      <div className="flex items-center justify-between p-3 bg-gray-50 rounded">
-                        <span className="font-medium">Home Repair</span>
-                        <Button variant="ghost" size="sm">
-                          Edit
-                        </Button>
-                      </div>
-                      <div className="flex items-center justify-between p-3 bg-gray-50 rounded">
-                        <span className="font-medium">Yoga Instruction</span>
-                        <Button variant="ghost" size="sm">
-                          Edit
-                        </Button>
-                      </div>
+                      {user?.seekedSkills?.map((skill: string) => (
+                        <SkillCard key={skill} skill={skill} />
+                      ))}
                     </div>
                   </div>
                 </div>
@@ -355,7 +206,7 @@ export default function UserProfilePage() {
             </Card>
 
             {/* Edit Location Card */}
-            <Card>
+            {/* <Card>
               <CardHeader>
                 <CardTitle>Location Settings</CardTitle>
                 <CardDescription>
@@ -394,7 +245,7 @@ export default function UserProfilePage() {
                   Save Changes
                 </Button>
               </CardFooter>
-            </Card>
+            </Card> */}
           </div>
         </div>
       </main>
