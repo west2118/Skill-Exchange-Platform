@@ -1,9 +1,21 @@
 import { Button } from "@/components/ui/button";
+import { auth } from "@/firebase";
+import { useAuthState } from "react-firebase-hooks/auth";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
+import { Loading } from "./Loading";
 
 const Navbar = () => {
-  const userUid = useSelector((state: any) => state.user.currentUserUid);
+  const users = useSelector((state: any) => state.user.users);
+  const [user, loading] = useAuthState(auth);
+
+  // if (loading) return <Loading />;
+
+  const userUid = user?.uid;
+
+  console.log(userUid);
+
+  const userId = users.find((user: any) => user.uid === userUid);
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -35,7 +47,7 @@ const Navbar = () => {
               <Link to="/deals">
                 <Button variant="ghost">My Deals</Button>
               </Link>
-              <Link to="/profile">
+              <Link to={`/profile/${userId._id}`}>
                 <Button className="bg-emerald-600 hover:bg-emerald-700">
                   My Profile
                 </Button>

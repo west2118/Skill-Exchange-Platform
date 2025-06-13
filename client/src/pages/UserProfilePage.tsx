@@ -9,25 +9,26 @@ import {
 } from "@/components/ui/card";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { Progress } from "@/components/ui/progress";
-import { Input } from "@/components/ui/input";
+// import { Progress } from "@/components/ui/progress";
+// import { Input } from "@/components/ui/input";
+// import {
+//   Select,
+//   SelectContent,
+//   SelectItem,
+//   SelectTrigger,
+//   SelectValue,
+// } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { useSelector } from "react-redux";
 import { formatDate } from "@/constants/formatDate";
 import SkillCard from "@/components/app/SkillCard";
+import { useParams } from "react-router-dom";
 
 export default function UserProfilePage() {
-  const userUid = useSelector((state: any) => state.user.currentUserUid);
+  const { id } = useParams();
   const users = useSelector((state: any) => state.user.users);
 
-  const user = users.find((user: any) => user.uid === userUid);
+  const user = users.find((user: any) => user._id === id);
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100">

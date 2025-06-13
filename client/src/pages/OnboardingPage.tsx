@@ -7,6 +7,7 @@ import SkillOfferStep from "@/components/app/SkillOfferStep";
 import SkillSeekStep from "@/components/app/SkillSeekStep";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
+import useAddressFromCoords from "@/hooks/useAddressFromCoords";
 
 export default function OnboardingPage() {
   const navigate = useNavigate();
@@ -14,7 +15,6 @@ export default function OnboardingPage() {
     (state: any) => state.user.currentUserToken
   );
   const [step, setStep] = useState(1);
-  const [isLoading, setIsLoading] = useState(false);
   const [currentAddress, setCurrentAddress] = useState("");
   const [zipCode, setZipCode] = useState("");
   const [otherOfferSkill, setOtherOfferSkill] = useState("");
@@ -23,43 +23,23 @@ export default function OnboardingPage() {
   const [selectedOfferSkills, setSelectedOfferSkills] = useState<string[]>([]);
   const [selectedSeekSkills, setSelectedSeekSkills] = useState<string[]>([]);
 
-  const getAddressFromCoords = async (lat: number, lng: number) => {
-    try {
-      const response = await publicApi.get(
-        `https://api.opencagedata.com/geocode/v1/json?q=${lat}+${lng}&key=${
-          import.meta.env.VITE_API_GEOCODER
-        }`
-      );
-      const address = response.data.results[0]?.formatted;
-      const components = response.data.results[0]?.components;
-
-      const zip = components?.postcode;
-
-      if (address && zip) {
-        setCurrentAddress(address);
-        setZipCode(zip);
-      } else {
-        toast.error("Address or ZIP not found.");
-      }
-    } catch (error) {
-      toast.error("Failed to fetch address.");
-    }
-  };
+  const { error, loading, fetchAddress } = useAddressFromCoords();
 
   const handleCurrentLocation = () => {
-    setIsLoading(true);
     navigator.geolocation.getCurrentPosition(
-      (position) => {
+      async (position) => {
         const { latitude, longitude } = position.coords;
+        const result = await fetchAddress(latitude, longitude);
 
-        setTimeout(async () => {
-          getAddressFromCoords(latitude, longitude);
-          setIsLoading(false);
-        }, 2000);
+        if (result) {
+          setCurrentAddress(result.address);
+          setZipCode(result.zip);
+        } else {
+          toast.error(error);
+        }
       },
       (error) => {
         toast.error(error.message);
-        setIsLoading(false);
       }
     );
   };
@@ -148,7 +128,7 @@ export default function OnboardingPage() {
           {/* STEP 1 - Location Step */}
           {step === 1 && (
             <LocationStep
-              isLoading={isLoading}
+              isLoading={loading}
               currentAddress={currentAddress}
               zipCode={zipCode}
               handleCurrentLocation={handleCurrentLocation}

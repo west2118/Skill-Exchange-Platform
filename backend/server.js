@@ -11,6 +11,7 @@ const app = express();
 
 import authRoutes from "./routes/authRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
+import postRoutes from "./routes/postRoutes.js";
 
 const require = createRequire(import.meta.url);
 const serviceAccount = require("./serviceAccountKey.json");
@@ -41,3 +42,4 @@ mongoose
 
 app.use("/api/", authRoutes);
 app.use("/api/", userRoutes);
+app.use("/api/", postRoutes);

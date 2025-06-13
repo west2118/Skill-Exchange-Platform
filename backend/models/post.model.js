@@ -14,12 +14,22 @@ const PostSchema = mongoose.Schema(
     availTimeTo: { type: String, required: true },
     preferredTime: { type: String, required: true },
     address: { type: String, required: true },
-    status: { type: String, required: true },
-    matched_id: {
+    status: { type: String, default: "Pending" },
+    matchedUserId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
-      required: true,
+      default: null,
     },
+    proposedUsers: [
+      {
+        userId: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "User",
+        },
+        message: { type: String },
+        proposedAt: { type: Date, default: Date.now },
+      },
+    ],
   },
   {
     timestamps: true,

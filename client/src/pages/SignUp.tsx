@@ -13,7 +13,7 @@ import { auth } from "@/firebase";
 import { publicApi } from "@/utils/axios";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
 export default function SignUp() {
@@ -206,9 +206,9 @@ export default function SignUp() {
             {/* Login Link */}
             <div className="text-center text-sm mt-4">
               Already have an account?{" "}
-              <a href="#" className="text-emerald-600 hover:underline">
+              <Link to="/login" className="text-emerald-600 hover:underline">
                 Sign in
-              </a>
+              </Link>
             </div>
           </CardFooter>
         </Card>

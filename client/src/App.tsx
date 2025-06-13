@@ -19,9 +19,10 @@ import ChatPage from "./pages/ChatPage";
 import CompletionPage from "./pages/CompletionPage";
 import { useEffect } from "react";
 import { auth } from "./firebase";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import {
   fetchUsers,
+  setCurrentUserId,
   setCurrentUserToken,
   setCurrentUserUid,
 } from "./store/userSlice";
@@ -38,7 +39,7 @@ const router = createBrowserRouter(
         <Route path="onboarding" element={<OnboardingPage />} />
         <Route path="login" element={<Login />} />
         <Route path="signUp" element={<SignUp />} />
-        <Route path="profile" element={<UserProfilePage />} />
+        <Route path="profile/:id" element={<UserProfilePage />} />
         <Route path="deals" element={<DealStatusPage />} />
         <Route path="messages" element={<ChatPage />} />
         <Route path="completion" element={<CompletionPage />} />
@@ -50,6 +51,16 @@ const router = createBrowserRouter(
 
 function App() {
   const dispatch = useDispatch();
+  const userUid = useSelector((state: any) => state.user.currentUserUid);
+  const users = useSelector((state: any) => state.user.users);
+
+  useEffect(() => {
+    const user = users?.find((user: any) => user.uid === userUid);
+
+    if (user) {
+      dispatch(setCurrentUserId(user._id));
+    }
+  }, [userUid, users]);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {

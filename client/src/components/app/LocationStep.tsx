@@ -13,7 +13,7 @@ import type { FC } from "react";
 import { toast } from "react-toastify";
 
 type LocationStepProps = {
-  isLoading: boolean;
+  isLoading: any;
   currentAddress: string;
   zipCode: string;
   handleCurrentLocation: () => void;
