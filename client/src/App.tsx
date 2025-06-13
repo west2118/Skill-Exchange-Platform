@@ -3,7 +3,6 @@ import {
   createBrowserRouter,
   Route,
   RouterProvider,
-  useNavigate,
 } from "react-router-dom";
 import "react-toastify/dist/ReactToastify.css";
 import { ToastContainer } from "react-toastify";
@@ -29,6 +28,7 @@ import {
 import { onAuthStateChanged, onIdTokenChanged } from "firebase/auth";
 import { publicApi } from "./utils/axios";
 import CreatePostPage from "./pages/CreatePostPage";
+import { fetchPosts } from "./store/postSlice";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -94,6 +94,11 @@ function App() {
           "http://localhost:8080/api/user"
         );
         dispatch(fetchUsers(userResponse.data));
+
+        const postResponse = await publicApi.get(
+          "http://localhost:8080/api/post"
+        );
+        dispatch(fetchPosts(postResponse.data));
       } catch (error) {}
     };
 

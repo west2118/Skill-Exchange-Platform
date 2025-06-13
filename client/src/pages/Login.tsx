@@ -119,7 +119,7 @@ export default function Login() {
           </CardContent>
           <CardFooter className="flex flex-col space-y-3">
             <Button className="w-full bg-emerald-600 hover:bg-emerald-700">
-              Create Account
+              Sign In
             </Button>
 
             {/* Divider */}

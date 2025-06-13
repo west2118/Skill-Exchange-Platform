@@ -9,11 +9,9 @@ const Navbar = () => {
   const users = useSelector((state: any) => state.user.users);
   const [user, loading] = useAuthState(auth);
 
-  // if (loading) return <Loading />;
+  if (loading) return <Loading />;
 
   const userUid = user?.uid;
-
-  console.log(userUid);
 
   const userId = users.find((user: any) => user.uid === userUid);
 

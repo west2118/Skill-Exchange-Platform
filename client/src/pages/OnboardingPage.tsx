@@ -95,7 +95,7 @@ export default function OnboardingPage() {
       );
 
       toast.success("Created Account Successfully!");
-      navigate("/profile");
+      navigate(`/profile/${12312312312}`);
     } catch (error: any) {
       toast.error(error.message);
     }

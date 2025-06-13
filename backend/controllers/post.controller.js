@@ -32,4 +32,16 @@ const postPost = async (req, res) => {
   }
 };
 
-export { postPost };
+const getPosts = async (req, res) => {
+  try {
+    const posts = await Post.find({});
+
+    if (!posts) return;
+
+    res.status(200).json(posts);
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
+
+export { postPost, getPosts };
