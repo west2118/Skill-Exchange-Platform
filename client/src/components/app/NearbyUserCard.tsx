@@ -63,6 +63,9 @@ const NearbyUserCard = ({ item }: any) => {
         name={`${user?.firstName} ${user?.lastName}`}
         skillSeek={item?.skillSeek}
         skillOffer={item?.skillOffer}
+        receiverId={item?.userId}
+        postId={item?._id}
+        exchangeId={null}
       />
     </Card>
   );

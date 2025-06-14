@@ -9,16 +9,13 @@ import {
 } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { MapPin as MapPinIcon } from "lucide-react";
 import { Filter as FilterIcon } from "lucide-react";
 import { Link } from "react-router-dom";
-import NearbyUserCard from "@/components/app/NearbyUserCard";
-import { useSelector } from "react-redux";
-import MyPostCard from "@/components/app/MyPostCard";
-import ProposedModal from "@/components/app/ProposedModal";
-import { useState } from "react";
+import NearbyTab from "./newsfeedTabs/NearbyTab";
+import MyPostTab from "./newsfeedTabs/MyPostTab";
+import MutualExchangeTab from "./newsfeedTabs/MutualExchangeTab";
 
 export default function NewsfeedPage() {
   const skillMatches = [
@@ -47,42 +44,6 @@ export default function NewsfeedPage() {
       avatar: "/avatars/taylor.jpg",
     },
   ];
-
-  const mutualExchanges = [
-    {
-      id: 1,
-      user1: "You",
-      user2: "Sarah J.",
-      exchange: "Bike Repair ↔ Spanish Lessons",
-      status: "Completed",
-      rating: "★★★★★",
-    },
-    {
-      id: 2,
-      user1: "You",
-      user2: "Michael T.",
-      exchange: "Guitar Lessons ↔ Furniture Assembly",
-      status: "Upcoming",
-      rating: "",
-    },
-    {
-      id: 3,
-      user1: "You",
-      user2: "Priya K.",
-      exchange: "Yoga Sessions ↔ Website Help",
-      status: "Pending",
-      rating: "",
-    },
-  ];
-
-  const posts = useSelector((state: any) => state.post.posts);
-  const currentUserId = useSelector((state: any) => state.user.currentUserId);
-
-  const userPosts = posts?.filter((post: any) => post.userId === currentUserId);
-
-  const nearbyPosts = posts?.filter(
-    (post: any) => post.userId !== currentUserId
-  );
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -116,13 +77,7 @@ export default function NewsfeedPage() {
           </TabsList>
 
           {/* Nearby Users Tab */}
-          <TabsContent value="nearby">
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-              {nearbyPosts.map((item: any) => (
-                <NearbyUserCard key={item._id} item={item} />
-              ))}
-            </div>
-          </TabsContent>
+          <NearbyTab />
 
           {/* Skill Matches Tab */}
           <TabsContent value="skills">
@@ -159,61 +114,10 @@ export default function NewsfeedPage() {
           </TabsContent>
 
           {/* Mutual Exchanges Tab */}
-          <TabsContent value="mutual">
-            <div className="space-y-4">
-              {mutualExchanges.map((exchange) => (
-                <Card key={exchange.id}>
-                  <CardHeader>
-                    <CardTitle>{exchange.exchange}</CardTitle>
-                    <CardDescription>
-                      Between {exchange.user1} and {exchange.user2}
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="flex items-center justify-between">
-                      <Badge
-                        variant={
-                          exchange.status === "Completed"
-                            ? "default"
-                            : "outline"
-                        }>
-                        {exchange.status}
-                      </Badge>
-                      <div className="text-yellow-500">{exchange.rating}</div>
-                    </div>
-                  </CardContent>
-                  <CardFooter className="flex justify-end space-x-2">
-                    {exchange.status === "Completed" && (
-                      <Button variant="outline">Leave Review</Button>
-                    )}
-                    {exchange.status === "Upcoming" && (
-                      <>
-                        <Button variant="outline">Reschedule</Button>
-                        <Button variant="destructive">Cancel</Button>
-                      </>
-                    )}
-                    {exchange.status === "Pending" && (
-                      <>
-                        <Button variant="outline">Decline</Button>
-                        <Button className="bg-emerald-600 hover:bg-emerald-700">
-                          Confirm
-                        </Button>
-                      </>
-                    )}
-                  </CardFooter>
-                </Card>
-              ))}
-            </div>
-          </TabsContent>
+          <MutualExchangeTab />
 
           {/* My Posts */}
-          <TabsContent value="my-post">
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-              {userPosts.map((item: any) => (
-                <MyPostCard key={item._id} item={item} />
-              ))}
-            </div>
-          </TabsContent>
+          <MyPostTab />
         </Tabs>
       </main>
     </div>

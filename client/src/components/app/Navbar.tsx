@@ -4,10 +4,23 @@ import { useAuthState } from "react-firebase-hooks/auth";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { Loading } from "./Loading";
+import { useEffect } from "react";
 
 const Navbar = () => {
   const users = useSelector((state: any) => state.user.users);
   const [user, loading] = useAuthState(auth);
+
+  useEffect(() => {
+    if (loading) {
+      document.body.classList.add("overflow-hidden");
+    } else {
+      document.body.classList.remove("overflow-hidden");
+    }
+
+    return () => {
+      document.body.classList.remove("overflow-hidden");
+    };
+  }, [loading]);
 
   if (loading) return <Loading />;
 

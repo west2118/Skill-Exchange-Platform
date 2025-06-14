@@ -1,4 +1,6 @@
+import Exchange from "../models/exchange.modal.js";
 import Post from "../models/post.model.js";
+import User from "../models/user.model.js";
 
 const postPost = async (req, res) => {
   try {
@@ -44,4 +46,40 @@ const getPosts = async (req, res) => {
   }
 };
 
-export { postPost, getPosts };
+const getUserPost = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const user = await User.findById(id);
+    if (!user) {
+      return res.status(400).json({ message: "User didn't exist" });
+    }
+
+    const userPosts = await Post.find({ userId: id });
+    if (!userPosts) return;
+
+    res.status(200).json(userPosts);
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
+
+const getNearbyPosts = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const userProposals = await Exchange.find({ proposerId: id });
+    const proposedPostId = userProposals.map((user) => user.postId.toString());
+
+    const posts = await Post.find({
+      userId: { $ne: id },
+      _id: { $nin: proposedPostId },
+    });
+
+    res.status(200).json(posts);
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
+
+export { postPost, getPosts, getNearbyPosts, getUserPost };

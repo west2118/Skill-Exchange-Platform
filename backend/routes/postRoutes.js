@@ -1,10 +1,17 @@
 import express from "express";
-import { postPost, getPosts } from "../controllers/post.controller.js";
+import {
+  postPost,
+  getPosts,
+  getNearbyPosts,
+  getUserPost,
+} from "../controllers/post.controller.js";
 import { verifyToken } from "../middleware/verifyToken.js";
 
 const router = express.Router();
 
-router.post("/post/:id", verifyToken, postPost);
 router.get("/post", getPosts);
+router.post("/post/:id", verifyToken, postPost);
+router.get("/post/:id", verifyToken, getNearbyPosts);
+router.get("/user-post/:id", verifyToken, getUserPost);
 
 export default router;

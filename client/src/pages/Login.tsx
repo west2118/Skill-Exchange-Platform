@@ -38,7 +38,7 @@ export default function Login() {
       toast.success("Logged In Successfully");
       navigate(`/profile/${user._id}`);
     } catch (error: any) {
-      toast.error(error.message);
+      toast.error(error.response?.data?.message || error.message);
     }
   };
 

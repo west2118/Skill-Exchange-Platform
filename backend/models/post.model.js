@@ -20,16 +20,6 @@ const PostSchema = mongoose.Schema(
       ref: "User",
       default: null,
     },
-    proposedUsers: [
-      {
-        userId: {
-          type: mongoose.Schema.Types.ObjectId,
-          ref: "User",
-        },
-        message: { type: String },
-        proposedAt: { type: Date, default: Date.now },
-      },
-    ],
   },
   {
     timestamps: true,

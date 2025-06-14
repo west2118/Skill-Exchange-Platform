@@ -24,12 +24,16 @@ import { toast } from "react-toastify";
 import Selection from "@/components/app/Selection";
 import { format } from "date-fns";
 import { privateApi } from "@/utils/axios";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import useAddressFromCoords from "@/hooks/useAddressFromCoords";
+import { addPost } from "@/store/postSlice";
+import { useNavigate } from "react-router-dom";
 
 const MemoizedSelection = React.memo(Selection);
 
 export default function CreatePostPage() {
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
   const token = useSelector((state: any) => state.user.currentUserToken);
   const userId = useSelector((state: any) => state.user.currentUserId);
   const [selectionData, setSelectionData] = useState({
@@ -112,8 +116,6 @@ export default function CreatePostPage() {
       address: formData.current.address,
     };
 
-    console.log(postData);
-
     try {
       const response = await privateApi.post(
         `http://localhost:8080/api/post/${userId}`,
@@ -125,6 +127,7 @@ export default function CreatePostPage() {
         }
       );
 
+      dispatch(addPost(response?.data?.newPost));
       toast.success(response?.data?.message);
     } catch (error: any) {
       toast.error(error.message);

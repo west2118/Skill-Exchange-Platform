@@ -5,7 +5,7 @@ import {
   RouterProvider,
 } from "react-router-dom";
 import "react-toastify/dist/ReactToastify.css";
-import { ToastContainer } from "react-toastify";
+import { toast, ToastContainer } from "react-toastify";
 import Layout from "./components/app/Layout";
 import HomePage from "./pages/HomePage";
 import NewsfeedPage from "./pages/NewsfeedPage";
@@ -29,6 +29,7 @@ import { onAuthStateChanged, onIdTokenChanged } from "firebase/auth";
 import { publicApi } from "./utils/axios";
 import CreatePostPage from "./pages/CreatePostPage";
 import { fetchPosts } from "./store/postSlice";
+import { fetchExchanges } from "./store/exchangeSlice";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -99,7 +100,14 @@ function App() {
           "http://localhost:8080/api/post"
         );
         dispatch(fetchPosts(postResponse.data));
-      } catch (error) {}
+
+        const exchangeResponse = await publicApi.get(
+          "http://localhost:8080/api/exchange"
+        );
+        dispatch(fetchExchanges(exchangeResponse.data));
+      } catch (error: any) {
+        toast.error(error.response?.data?.message || error.message);
+      }
     };
 
     fetchData();

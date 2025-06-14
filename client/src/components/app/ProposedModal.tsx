@@ -1,7 +1,11 @@
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { useEffect } from "react";
+import { useAppSelector } from "@/hooks/useAppSelector";
+import { privateApi } from "@/utils/axios";
+import { useEffect, useState } from "react";
 import ReactDOM from "react-dom";
+import { toast } from "react-toastify";
+import { Label } from "@/components/ui/label";
 
 type ProposedModalProps = {
   isModalOpen: boolean;
@@ -9,6 +13,9 @@ type ProposedModalProps = {
   name: string;
   skillSeek: string;
   skillOffer: string;
+  receiverId: string;
+  postId: string;
+  exchangeId: string | null;
 };
 
 const ProposedModal = ({
@@ -17,11 +24,16 @@ const ProposedModal = ({
   name,
   skillSeek,
   skillOffer,
+  receiverId,
+  postId,
+  exchangeId,
 }: ProposedModalProps) => {
-  if (!isModalOpen) return null;
-
-  const modalRoot = document.getElementById("modal-root");
-  if (!modalRoot) return null;
+  const token = useAppSelector((state) => state.user.currentUserToken);
+  const currentUserId = useAppSelector((state) => state.user.currentUserId);
+  const exchanges = useAppSelector((state) => state.exchange.exchanges);
+  const [message, setMessage] = useState(
+    `I noticed you offer ${skillOffer}. I'd be happy to provide ${skillSeek} in exchange.`
+  );
 
   useEffect(() => {
     if (isModalOpen) {
@@ -34,6 +46,54 @@ const ProposedModal = ({
       document.body.classList.remove("overflow-hidden");
     };
   }, [isModalOpen]);
+
+  useEffect(() => {
+    if (exchangeId) {
+      const exchange = exchanges.find(
+        (exchange) => exchange._id === exchangeId
+      );
+
+      if (!exchange) return;
+
+      setMessage(exchange.message || "");
+    }
+  }, [exchanges, exchangeId]);
+
+  const handleSubmitExchange = async () => {
+    if (message.trim().length === 0) {
+      return toast.error("Required Field is missing");
+    }
+
+    const exchangeData = {
+      proposerId: currentUserId,
+      receiverId,
+      postId,
+      skillOffer,
+      skillSeek,
+      message,
+    };
+
+    try {
+      const response = await privateApi.post(
+        "http://localhost:8080/api/exchange",
+        exchangeData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      isCancel();
+      toast.success(response?.data?.message);
+    } catch (error: any) {
+      toast.error(error.response?.data?.message || error.message);
+    }
+  };
+
+  if (!isModalOpen) return null;
+
+  const modalRoot = document.getElementById("modal-root");
+  if (!modalRoot) return null;
 
   return ReactDOM.createPortal(
     <div
@@ -85,23 +145,36 @@ const ProposedModal = ({
               className="block text-sm font-medium text-gray-700">
               Proposal Message
             </label>
-            <Textarea
-              id="message"
-              placeholder={`Hi ${name}, I'd like to exchange my ${skillSeek.toLowerCase()} for your ${skillOffer.toLowerCase()}...`}
-              className="min-h-[120px]"
-              defaultValue={`Hi ${name},\n\nI noticed you offer ${skillOffer}. I'd be happy to provide ${skillSeek} in exchange. `}
-            />
+            {!exchangeId ? (
+              <Textarea
+                id="message"
+                required
+                onChange={(e) => setMessage(e.target.value)}
+                value={message}
+                placeholder={`Hi ${name}, I'd like to exchange my ${skillSeek.toLowerCase()} for your ${skillOffer.toLowerCase()}...`}
+                className="min-h-[120px]"
+              />
+            ) : (
+              <div className="min-h-[120px] rounded-md border border-gray-300 bg-gray-50 p-4 text-gray-700 shadow-sm">
+                {message}
+              </div>
+            )}
           </div>
         </div>
 
         {/* Footer */}
+
         <div className="p-4 border-t flex justify-end space-x-2">
           <Button onClick={isCancel} type="button" variant="outline">
-            Cancel
+            {!exchangeId ? "Cancel" : "Close"}
           </Button>
-          <Button className="bg-green-600 hover:bg-green-700">
-            Send Proposal
-          </Button>
+          {!exchangeId && (
+            <Button
+              onClick={handleSubmitExchange}
+              className="bg-green-600 hover:bg-green-700">
+              Send Proposal
+            </Button>
+          )}
         </div>
       </div>
     </div>,
