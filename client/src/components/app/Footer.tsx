@@ -1,8 +1,14 @@
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
+import { Loading } from "./Loading";
+import { useAuth } from "@/utils/AuthProvider";
 
 const Footer = () => {
+  const { loading } = useAuth();
+
+  if (loading) return <Loading />;
+
   return (
     <footer className="border-t bg-white py-12">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">

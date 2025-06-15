@@ -22,13 +22,27 @@ import { Label } from "@/components/ui/label";
 import { useSelector } from "react-redux";
 import { formatDate } from "@/constants/formatDate";
 import SkillCard from "@/components/app/SkillCard";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
+import { getAuth, signOut } from "firebase/auth";
+import { toast } from "react-toastify";
 
 export default function UserProfilePage() {
   const { id } = useParams();
+  const navigate = useNavigate();
   const users = useSelector((state: any) => state.user.users);
 
   const user = users.find((user: any) => user._id === id);
+
+  const handleLogout = async () => {
+    const auth = getAuth();
+
+    try {
+      await signOut(auth);
+      navigate("/login");
+    } catch (error: any) {
+      toast.error(error.message);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100">
@@ -63,9 +77,15 @@ export default function UserProfilePage() {
                   <p className="font-medium">{user?.email}</p>
                 </div>
               </CardContent>
-              <CardFooter className="flex justify-center">
+              <CardFooter className="space-y-3 flex flex-col">
                 <Button variant="outline" className="w-full">
                   Edit Profile
+                </Button>
+                <Button
+                  onClick={handleLogout}
+                  variant="destructive"
+                  className="w-full">
+                  Sign Out
                 </Button>
               </CardFooter>
             </Card>

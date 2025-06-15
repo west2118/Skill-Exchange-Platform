@@ -9,6 +9,7 @@ const postExchange = async (req, res) => {
     const alreadyExchange = await Exchange.findOne({
       proposerId,
       postId,
+      status: "Pending",
     });
     if (alreadyExchange) {
       return res.status(400).json({ message: "Already Submitted Proposal" });
@@ -70,7 +71,9 @@ const cancelExchange = async (req, res) => {
     } catch (error) {
       res.status(500).json({ message: "Server error", error: error.message });
     }
-  } catch (error) {}
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
 };
 
 const getUserExchange = async (req, res) => {

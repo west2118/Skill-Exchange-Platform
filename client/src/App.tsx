@@ -30,21 +30,27 @@ import { publicApi } from "./utils/axios";
 import CreatePostPage from "./pages/CreatePostPage";
 import { fetchPosts } from "./store/postSlice";
 import { fetchExchanges } from "./store/exchangeSlice";
+import ProtectedLayout from "./utils/ProtectedLayout";
+import { useAuth } from "./utils/AuthProvider";
+import { Loading } from "./components/app/Loading";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
     <>
       <Route path="/" element={<Layout />}>
         <Route index element={<HomePage />} />
-        <Route path="dashboard" element={<NewsfeedPage />} />
-        <Route path="onboarding" element={<OnboardingPage />} />
-        <Route path="login" element={<Login />} />
         <Route path="signUp" element={<SignUp />} />
-        <Route path="profile/:id" element={<UserProfilePage />} />
-        <Route path="deals" element={<DealStatusPage />} />
-        <Route path="messages" element={<ChatPage />} />
-        <Route path="completion" element={<CompletionPage />} />
-        <Route path="create-exchange" element={<CreatePostPage />} />
+        <Route path="login" element={<Login />} />
+
+        <Route element={<ProtectedLayout />}>
+          <Route path="dashboard" element={<NewsfeedPage />} />
+          <Route path="onboarding" element={<OnboardingPage />} />
+          <Route path="profile/:id" element={<UserProfilePage />} />
+          <Route path="deals" element={<DealStatusPage />} />
+          <Route path="messages" element={<ChatPage />} />
+          <Route path="completion" element={<CompletionPage />} />
+          <Route path="create-exchange" element={<CreatePostPage />} />
+        </Route>
       </Route>
     </>
   )

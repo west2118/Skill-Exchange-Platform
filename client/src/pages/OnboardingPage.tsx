@@ -6,11 +6,13 @@ import LocationStep from "@/components/app/LocationStep";
 import SkillOfferStep from "@/components/app/SkillOfferStep";
 import SkillSeekStep from "@/components/app/SkillSeekStep";
 import { useNavigate } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import useAddressFromCoords from "@/hooks/useAddressFromCoords";
+import { updateUser } from "@/store/userSlice";
 
 export default function OnboardingPage() {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const currentUserToken = useSelector(
     (state: any) => state.user.currentUserToken
   );
@@ -81,7 +83,7 @@ export default function OnboardingPage() {
     };
 
     try {
-      await publicApi.post(
+      const response = await publicApi.post(
         "http://localhost:8080/api/user-profile",
         {
           ...addedData,
@@ -94,8 +96,11 @@ export default function OnboardingPage() {
         }
       );
 
+      const data = response?.data;
+
+      dispatch(updateUser({ userId: data._id, newData: data }));
       toast.success("Created Account Successfully!");
-      navigate(`/profile/${12312312312}`);
+      navigate(`/profile/${data._id}`);
     } catch (error: any) {
       toast.error(error.message);
     }

@@ -10,14 +10,22 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { auth } from "@/firebase";
+import {
+  addUser,
+  setCurrentUserId,
+  setCurrentUserToken,
+  setCurrentUserUid,
+} from "@/store/userSlice";
 import { publicApi } from "@/utils/axios";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { useState } from "react";
+import { useDispatch } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
 export default function SignUp() {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -55,7 +63,7 @@ export default function SignUp() {
 
       const token = await userCredentials.user.getIdToken();
 
-      await publicApi.post(
+      const response = await publicApi.post(
         "http://localhost:8080/api/user-profile",
         {
           firstName: formData.firstName,
@@ -70,6 +78,12 @@ export default function SignUp() {
         }
       );
 
+      console.log(response.data);
+
+      dispatch(setCurrentUserUid(userCredentials.user?.uid));
+      dispatch(setCurrentUserId(response?.data?._id));
+      dispatch(setCurrentUserToken(token));
+      dispatch(addUser(response?.data));
       navigate("/onboarding");
     } catch (error: any) {
       toast.error(error.message);

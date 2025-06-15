@@ -68,7 +68,10 @@ const getNearbyPosts = async (req, res) => {
   const { id } = req.params;
 
   try {
-    const userProposals = await Exchange.find({ proposerId: id });
+    const userProposals = await Exchange.find({
+      proposerId: id,
+      status: "Pending",
+    });
     const proposedPostId = userProposals.map((user) => user.postId.toString());
 
     const posts = await Post.find({
@@ -82,4 +85,38 @@ const getNearbyPosts = async (req, res) => {
   }
 };
 
-export { postPost, getPosts, getNearbyPosts, getUserPost };
+const getPerfectMatch = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const user = await User.findById(id);
+    if (!user) {
+      return res.status(400).json({ message: "User didn't exist" });
+    }
+
+    const userProposals = await Exchange.find({
+      proposerId: id,
+      status: "Pending",
+    });
+    const proposedPostId = userProposals.map((proposal) =>
+      proposal.postId.toString()
+    );
+
+    const posts = await Post.find({
+      userId: { $ne: id },
+      _id: { $nin: proposedPostId },
+    });
+
+    const matchedResults = posts.filter(
+      (post) =>
+        user.offeredSkills.includes(post.skillSeek) &&
+        user.seekedSkills.includes(post.skillOffer)
+    );
+
+    res.status(200).json(matchedResults);
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
+
+export { postPost, getPosts, getNearbyPosts, getUserPost, getPerfectMatch };

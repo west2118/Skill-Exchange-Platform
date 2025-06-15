@@ -9,7 +9,6 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useAppSelector } from "@/hooks/useAppSelector";
-import { useSelector } from "react-redux";
 import ProposedModal from "./ProposedModal";
 import { useState } from "react";
 import { privateApi } from "@/utils/axios";
@@ -18,7 +17,7 @@ import { toast } from "react-toastify";
 const MutualExchangeCard = ({ exchange }: any) => {
   const token = useAppSelector((state) => state.user.currentUserToken);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-  const users = useSelector((state: any) => state.user.users);
+  const users = useAppSelector((state: any) => state.user.users);
   const currentUserId = useAppSelector((state) => state.user.currentUserId);
 
   const otherUserId =

@@ -4,11 +4,28 @@ import { useAuthState } from "react-firebase-hooks/auth";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { Loading } from "./Loading";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+
+type CurrentUser = {
+  _id: string;
+  uid: string;
+  createdAt: string;
+  updatedAt: string;
+  email: string;
+  firstName: string;
+  lastName: string;
+  offeredSkills: string[];
+  seekedSkills: string[];
+  location: {
+    zip: string;
+    address: string;
+  };
+};
 
 const Navbar = () => {
   const users = useSelector((state: any) => state.user.users);
   const [user, loading] = useAuthState(auth);
+  const [currentUser, setCurrentUser] = useState<CurrentUser | null>(null);
 
   useEffect(() => {
     if (loading) {
@@ -22,11 +39,18 @@ const Navbar = () => {
     };
   }, [loading]);
 
+  useEffect(() => {
+    if (user) {
+      const userUid = user.uid;
+      const matchId = users.find((user: any) => user.uid === userUid);
+
+      if (matchId) {
+        setCurrentUser(matchId);
+      }
+    }
+  }, [user, users]);
+
   if (loading) return <Loading />;
-
-  const userUid = user?.uid;
-
-  const userId = users.find((user: any) => user.uid === userUid);
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -47,7 +71,7 @@ const Navbar = () => {
           <span className="font-bold text-emerald-600">LocalLoop</span>
         </div>
         <nav className="flex items-center space-x-6">
-          {userUid ? (
+          {currentUser && currentUser._id ? (
             <>
               <Link to="/dashboard">
                 <Button variant="ghost">Dashboard</Button>
@@ -58,7 +82,7 @@ const Navbar = () => {
               <Link to="/deals">
                 <Button variant="ghost">My Deals</Button>
               </Link>
-              <Link to={`/profile/${userId._id}`}>
+              <Link to={`/profile/${currentUser._id}`}>
                 <Button className="bg-emerald-600 hover:bg-emerald-700">
                   My Profile
                 </Button>
