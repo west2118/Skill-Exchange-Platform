@@ -1,5 +1,38 @@
-import Exchange from "../models/exchange.modal.js";
+import Exchange from "../models/exchange.model.js";
 import User from "../models/user.model.js";
+
+const getAllExchange = async (req, res) => {
+  try {
+    const exchanges = await Exchange.find({});
+
+    if (!exchanges) return;
+
+    res.status(200).json(exchanges);
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
+
+const getUserExchange = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const user = await User.findById(id);
+    if (!user) {
+      return res.status(400).json({ message: "User didn't exist" });
+    }
+
+    const userExchanges = await Exchange.find({
+      $or: [{ proposerId: id }, { receiverId: id }],
+      status: { $ne: "Exchanged" },
+    });
+    if (!userExchanges) return;
+
+    res.status(200).json(userExchanges);
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
 
 const postExchange = async (req, res) => {
   try {
@@ -37,9 +70,6 @@ const cancelExchange = async (req, res) => {
     const { id } = req.params;
     const { exchangeId } = req.body;
 
-    console.log(id);
-    console.log(exchangeId);
-
     try {
       const user = await User.findById(id);
       if (!user) {
@@ -71,39 +101,6 @@ const cancelExchange = async (req, res) => {
     } catch (error) {
       res.status(500).json({ message: "Server error", error: error.message });
     }
-  } catch (error) {
-    res.status(500).json({ message: "Server error", error: error.message });
-  }
-};
-
-const getUserExchange = async (req, res) => {
-  const { id } = req.params;
-
-  try {
-    const user = await User.findById(id);
-    if (!user) {
-      return res.status(400).json({ message: "User didn't exist" });
-    }
-
-    const userExchanges = await Exchange.find({
-      $or: [{ proposerId: id }, { receiverId: id }],
-      status: { $ne: "Exchanged" },
-    });
-    if (!userExchanges) return;
-
-    res.status(200).json(userExchanges);
-  } catch (error) {
-    res.status(500).json({ message: "Server error", error: error.message });
-  }
-};
-
-const getAllExchange = async (req, res) => {
-  try {
-    const exchanges = await Exchange.find({});
-
-    if (!exchanges) return;
-
-    res.status(200).json(exchanges);
   } catch (error) {
     res.status(500).json({ message: "Server error", error: error.message });
   }

@@ -13,6 +13,7 @@ import authRoutes from "./routes/authRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
 import postRoutes from "./routes/postRoutes.js";
 import exchangeRoutes from "./routes/exchangeRoutes.js";
+import dealRoutes from "./routes/dealRoutes.js";
 
 const require = createRequire(import.meta.url);
 const serviceAccount = require("./serviceAccountKey.json");
@@ -45,3 +46,4 @@ app.use("/api/", authRoutes);
 app.use("/api/", userRoutes);
 app.use("/api/", postRoutes);
 app.use("/api/", exchangeRoutes);
+app.use("/api/", dealRoutes);

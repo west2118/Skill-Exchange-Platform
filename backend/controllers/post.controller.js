@@ -1,4 +1,4 @@
-import Exchange from "../models/exchange.modal.js";
+import Exchange from "../models/exchange.model.js";
 import Post from "../models/post.model.js";
 import User from "../models/user.model.js";
 
@@ -77,6 +77,7 @@ const getNearbyPosts = async (req, res) => {
     const posts = await Post.find({
       userId: { $ne: id },
       _id: { $nin: proposedPostId },
+      status: { $eq: "Pending" },
     });
 
     res.status(200).json(posts);
@@ -105,6 +106,7 @@ const getPerfectMatch = async (req, res) => {
     const posts = await Post.find({
       userId: { $ne: id },
       _id: { $nin: proposedPostId },
+      status: { $eq: "Pending" },
     });
 
     const matchedResults = posts.filter(

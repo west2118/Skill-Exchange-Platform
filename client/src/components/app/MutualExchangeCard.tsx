@@ -56,6 +56,34 @@ const MutualExchangeCard = ({ exchange }: any) => {
     }
   };
 
+  const handleAcceptProposal = async () => {
+    const proposalData = {
+      proposerId: exchange?.proposerId,
+      postId: exchange?.postId,
+      exchangeId: exchange?._id,
+      skillOffer: exchange?.skillOffer,
+      skillSeek: exchange?.skillSeek,
+    };
+
+    console.log(proposalData);
+
+    try {
+      const response = await privateApi.post(
+        `http://localhost:8080/api/deal/${currentUserId}`,
+        { ...proposalData },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      toast.success(response?.data?.message);
+    } catch (error: any) {
+      toast.error(error.response?.data?.message || error.message);
+    }
+  };
+
   return (
     <Card>
       <CardHeader>
@@ -91,19 +119,23 @@ const MutualExchangeCard = ({ exchange }: any) => {
             </Button>
           </>
         )} */}
-        {exchange.receiverId === currentUserId ? (
+        {exchange.receiverId === currentUserId &&
+        exchange.status === "Pending" ? (
           <div className="flex justify-between w-full">
             <Button className="bg-red-600 hover:bg-red-700">Decline</Button>
             <div className="space-x-2">
               <Button onClick={() => setIsModalOpen(true)} variant="outline">
                 View Proposal
               </Button>
-              <Button className="bg-emerald-600 hover:bg-emerald-700">
+              <Button
+                onClick={handleAcceptProposal}
+                className="bg-emerald-600 hover:bg-emerald-700">
                 Confirm
               </Button>
             </div>
           </div>
-        ) : exchange.status === "Cancelled" ? (
+        ) : exchange.status === "Cancelled" ||
+          exchange.status === "Rejected" ? (
           <div className="space-x-2">
             <Button className="bg-red-600 hover:bg-red-700">Delete</Button>
           </div>
