@@ -11,6 +11,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
+import ActiveDealTab from "./dealsTabs/ActiveDealTab";
 
 export default function DealStatusPage() {
   return (
@@ -35,103 +36,7 @@ export default function DealStatusPage() {
           </TabsList>
 
           {/* Active Deals Tab */}
-          <TabsContent value="active" className="space-y-4">
-            {/* Deal 1 */}
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between pb-3">
-                <div className="flex items-center space-x-4">
-                  <Avatar>
-                    <AvatarImage src="/avatars/sarah.jpg" />
-                    <AvatarFallback>SJ</AvatarFallback>
-                  </Avatar>
-                  <div>
-                    <CardTitle>Sarah Johnson</CardTitle>
-                    <CardDescription>Bike Repair ↔ Spanish</CardDescription>
-                  </div>
-                </div>
-                <Badge className="bg-emerald-100 text-emerald-800">
-                  In Progress
-                </Badge>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-                  <div className="space-y-2">
-                    <Label>Next Session</Label>
-                    <p className="font-medium">Saturday, June 10</p>
-                    <p className="text-sm text-gray-600">2:00 PM - 3:00 PM</p>
-                  </div>
-                  <div className="space-y-2">
-                    <Label>Location</Label>
-                    <p className="font-medium">Central Park</p>
-                    <p className="text-sm text-gray-600">72nd St entrance</p>
-                  </div>
-                  <div className="space-y-2">
-                    <Label>Progress</Label>
-                    <div className="flex items-center space-x-2">
-                      <Progress value={25} className="h-2" />
-                      <span className="text-sm text-gray-600">
-                        1 of 4 sessions
-                      </span>
-                    </div>
-                  </div>
-                </div>
-                <div className="mt-6 flex justify-end space-x-4">
-                  <Button variant="outline">Reschedule</Button>
-                  <Button className="bg-emerald-600 hover:bg-emerald-700">
-                    Message
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Deal 2 */}
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between pb-3">
-                <div className="flex items-center space-x-4">
-                  <Avatar>
-                    <AvatarImage src="/avatars/michael.jpg" />
-                    <AvatarFallback>MT</AvatarFallback>
-                  </Avatar>
-                  <div>
-                    <CardTitle>Michael T.</CardTitle>
-                    <CardDescription>
-                      Guitar Lessons ↔ Moving Help
-                    </CardDescription>
-                  </div>
-                </div>
-                <Badge className="bg-blue-100 text-blue-800">
-                  Pending Start
-                </Badge>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-                  <div className="space-y-2">
-                    <Label>First Session</Label>
-                    <p className="font-medium">Wednesday, June 14</p>
-                    <p className="text-sm text-gray-600">6:00 PM - 7:00 PM</p>
-                  </div>
-                  <div className="space-y-2">
-                    <Label>Location</Label>
-                    <p className="font-medium">Michael's Apartment</p>
-                    <p className="text-sm text-gray-600">123 Main St, Apt 4B</p>
-                  </div>
-                  <div className="space-y-2">
-                    <Label>Progress</Label>
-                    <div className="flex items-center space-x-2">
-                      <Progress value={0} className="h-2" />
-                      <span className="text-sm text-gray-600">Not started</span>
-                    </div>
-                  </div>
-                </div>
-                <div className="mt-6 flex justify-end space-x-4">
-                  <Button variant="outline">Cancel</Button>
-                  <Button className="bg-emerald-600 hover:bg-emerald-700">
-                    Confirm Details
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
+          <ActiveDealTab />
 
           {/* Completed Deals Tab */}
           <TabsContent value="completed" className="space-y-4">

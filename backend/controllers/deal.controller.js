@@ -96,4 +96,4 @@ const getUserDeal = async (req, res) => {
   }
 };
 
-export { postDeal };
+export { postDeal, getUserDeal };

@@ -1,46 +1,29 @@
+import { CardSkeletonLoading } from "@/components/app/CardSkeletonLoading";
+import { ErrorComponent } from "@/components/app/ErrorComponent";
 import NearbyUserCard from "@/components/app/NearbyUserCard";
 import { useAppSelector } from "@/hooks/useAppSelector";
-import { privateApi } from "@/utils/axios";
+import useFetchData from "@/hooks/useFetchData";
 import { TabsContent } from "@radix-ui/react-tabs";
-import { useEffect, useState } from "react";
-import { toast } from "react-toastify";
 
 const NearbyTab = () => {
   const token = useAppSelector((state) => state.user.currentUserToken);
   const currentUserID = useAppSelector((state) => state.user.currentUserId);
-  const [nearbyPosts, setNearbyPosts] = useState<string[]>([]);
+  const { data, loading, error } = useFetchData<[]>(
+    `http://localhost:8080/api/post/${currentUserID}`,
+    token
+  );
 
-  useEffect(() => {
-    if (!currentUserID || !token) return;
-
-    const fetchData = async () => {
-      try {
-        const response = await privateApi.get(
-          `http://localhost:8080/api/post/${currentUserID}`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-
-        console.log(response?.data);
-
-        setNearbyPosts(response?.data);
-      } catch (error: any) {
-        toast.error(error.response?.data?.message || error.message);
-      }
-    };
-
-    fetchData();
-  }, [currentUserID, token]);
+  if (loading)
+    return <CardSkeletonLoading count={data?.length || 3} tabValue="nearby" />;
+  if (error) return <ErrorComponent message={error} />;
 
   return (
     <TabsContent value="nearby">
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {nearbyPosts.map((item: any) => (
-          <NearbyUserCard key={item._id} item={item} />
-        ))}
+        {data &&
+          data.map((item: any) => (
+            <NearbyUserCard key={item._id} item={item} />
+          ))}
       </div>
     </TabsContent>
   );
