@@ -1,6 +1,7 @@
 import ActiveDealCard from "@/components/app/ActiveDealCard";
 import { CardSkeletonLoading } from "@/components/app/CardSkeletonLoading";
 import { ErrorComponent } from "@/components/app/ErrorComponent";
+import { SessionModal } from "@/components/app/SessionModal";
 import { TabsContent } from "@/components/ui/tabs";
 import { useAppSelector } from "@/hooks/useAppSelector";
 import useFetchData from "@/hooks/useFetchData";

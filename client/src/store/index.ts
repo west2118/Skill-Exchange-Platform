@@ -1,13 +1,15 @@
 import { configureStore } from "@reduxjs/toolkit";
 import userReducer from "./userSlice";
-import postReducer from "./postSlice";
 import exchangeReducer from "./exchangeSlice";
+import postReducer from "./postSlice";
+import dealReducer from "./dealSlice";
 
 const store = configureStore({
   reducer: {
     user: userReducer,
     exchange: exchangeReducer,
     post: postReducer,
+    deal: dealReducer,
   },
 });
 

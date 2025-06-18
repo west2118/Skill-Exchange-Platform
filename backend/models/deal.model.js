@@ -1,5 +1,16 @@
 import mongoose from "mongoose";
 
+const SessionSchema = mongoose.Schema(
+  {
+    date: { type: String },
+    startTime: { type: String },
+    endTime: { type: String },
+    location: { type: String },
+    address: { type: String },
+  },
+  { _id: false }
+);
+
 const DealSchema = mongoose.Schema(
   {
     proposerId: {
@@ -25,15 +36,7 @@ const DealSchema = mongoose.Schema(
     skillOffer: { type: String, required: true },
     skillSeek: { type: String, required: true },
     status: { type: String, default: "Upcoming" },
-    sessions: [
-      {
-        date: { type: String },
-        startTime: { type: Number },
-        endTime: { type: Number },
-        location: { type: String },
-        address: { type: String },
-      },
-    ],
+    sessions: [SessionSchema],
   },
   { timestamps: true }
 );

@@ -31,8 +31,9 @@ import CreatePostPage from "./pages/CreatePostPage";
 import { fetchPosts } from "./store/postSlice";
 import { fetchExchanges } from "./store/exchangeSlice";
 import ProtectedLayout from "./utils/ProtectedLayout";
-import { useAuth } from "./utils/AuthProvider";
-import { Loading } from "./components/app/Loading";
+import { SessionExchangeForm } from "./pages/SessionExchangeForm";
+import { fetchDeals } from "./store/dealSlice";
+import { SessionModal } from "./components/app/SessionModal";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -44,12 +45,21 @@ const router = createBrowserRouter(
 
         <Route element={<ProtectedLayout />}>
           <Route path="dashboard" element={<NewsfeedPage />} />
+          <Route path="session-modal" element={<SessionModal />} />
           <Route path="onboarding" element={<OnboardingPage />} />
           <Route path="profile/:id" element={<UserProfilePage />} />
           <Route path="deals" element={<DealStatusPage />} />
           <Route path="messages" element={<ChatPage />} />
           <Route path="completion" element={<CompletionPage />} />
           <Route path="create-exchange" element={<CreatePostPage />} />
+          <Route
+            path="add-session/:id"
+            element={<SessionExchangeForm isEdit={false} />}
+          />
+          <Route
+            path="edit-session/:id"
+            element={<SessionExchangeForm isEdit={true} />}
+          />
         </Route>
       </Route>
     </>
@@ -111,6 +121,11 @@ function App() {
           "http://localhost:8080/api/exchange"
         );
         dispatch(fetchExchanges(exchangeResponse.data));
+
+        const dealResponse = await publicApi.get(
+          "http://localhost:8080/api/deal"
+        );
+        dispatch(fetchDeals(dealResponse.data));
       } catch (error: any) {
         toast.error(error.response?.data?.message || error.message);
       }

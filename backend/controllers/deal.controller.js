@@ -96,4 +96,55 @@ const getUserDeal = async (req, res) => {
   }
 };
 
-export { postDeal, getUserDeal };
+const postSession = async (req, res) => {
+  const { id } = req.params;
+  const { dealId, sessionData } = req.body;
+
+  console.log(dealId, sessionData);
+
+  try {
+    const user = await User.findById(id);
+    if (!user) {
+      res.status(400).json({ message: "User didn't exist" });
+    }
+
+    const deal = await Deal.findById(dealId);
+    if (!deal) {
+      res.status(400).json({ message: "Deal cannot found" });
+    }
+
+    if (deal.proposerId.toString() !== id.toString()) {
+      res
+        .status(400)
+        .json({ message: "You don't have authorize in this deal" });
+    }
+
+    const updatedDeal = await Deal.findByIdAndUpdate(
+      dealId,
+      {
+        sessions: sessionData,
+      },
+      { new: true }
+    );
+
+    res
+      .status(200)
+      .json({ message: "Session created successfully!", updatedDeal });
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
+
+const getAllDeal = async (req, res) => {
+  try {
+    const deals = await Deal.find({});
+
+    if (!deals) return;
+
+    res.status(200).json(deals);
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
+
+export { postDeal, getUserDeal, postSession, getAllDeal };
