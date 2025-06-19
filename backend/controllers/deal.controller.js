@@ -100,8 +100,6 @@ const postSession = async (req, res) => {
   const { id } = req.params;
   const { dealId, sessionData } = req.body;
 
-  console.log(dealId, sessionData);
-
   try {
     const user = await User.findById(id);
     if (!user) {
@@ -147,4 +145,41 @@ const getAllDeal = async (req, res) => {
   }
 };
 
-export { postDeal, getUserDeal, postSession, getAllDeal };
+const acceptDealSession = async (req, res) => {
+  const { id } = req.params;
+  const { dealId } = req.body;
+
+  try {
+    const user = await User.findById(id);
+    if (!user) {
+      res.status(400).json({ message: "User didn't exist" });
+    }
+
+    const deal = await Deal.findById(dealId);
+    if (!deal) {
+      res.status(400).json({ message: "Deal cannot found" });
+    }
+
+    if (deal.receiverId.toString() !== id) {
+      res
+        .status(400)
+        .json({ message: "You don't have authorize in this deal" });
+    }
+
+    const updatedDeal = await Deal.findByIdAndUpdate(
+      dealId,
+      {
+        status: "In Progress",
+      },
+      { new: true }
+    );
+
+    res
+      .status(200)
+      .json({ message: "Deal Session Accepted Successfully!", updatedDeal });
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
+
+export { postDeal, getUserDeal, postSession, getAllDeal, acceptDealSession };

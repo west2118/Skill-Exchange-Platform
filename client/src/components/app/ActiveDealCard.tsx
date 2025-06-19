@@ -14,13 +14,37 @@ import { useAppSelector } from "@/hooks/useAppSelector";
 import { Link, useNavigate } from "react-router-dom";
 import { SessionModal } from "./SessionModal";
 import { useState } from "react";
+import { formatTimeWithIntl } from "@/constants/formatTimeWithInt";
 
 const ActiveDealCard = ({ active }: { active: any }) => {
   const navigate = useNavigate();
   const currentUserId = useAppSelector((state) => state.user.currentUserId);
   const users = useAppSelector((state) => state.user.users);
-  const user = users.find((user) => user._id === active.proposerId);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+
+  const user = users.find((user) => user._id === active.proposerId);
+
+  const isSessionCompleted = (session: any) => {
+    const end = new Date(session.date);
+    const [hour, minute] = session.endTime.split(":").map(Number);
+    end.setHours(hour, minute, 0, 0);
+    return end < new Date();
+  };
+
+  const getNextSession = (sessions: any[]) => {
+    return sessions
+      .filter((session) => !isSessionCompleted(session))
+      .sort(
+        (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
+      )[0];
+  };
+
+  const nextSession = getNextSession(active.sessions);
+  const completedSessions = active.sessions.filter(isSessionCompleted).length;
+  const isNextSessionCompleted = nextSession
+    ? isSessionCompleted(nextSession)
+    : true;
+  const totalSessions = active.sessions.length;
 
   return (
     <Card>
@@ -49,27 +73,79 @@ const ActiveDealCard = ({ active }: { active: any }) => {
             <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
               <div className="space-y-2">
                 <Label>Next Session</Label>
-                <p className="font-medium">Saturday, June 10</p>
-                <p className="text-sm text-gray-600">2:00 PM - 3:00 PM</p>
+                <p className="font-medium">
+                  {nextSession
+                    ? new Date(nextSession.date).toLocaleDateString(undefined, {
+                        weekday: "long",
+                        month: "long",
+                        day: "numeric",
+                      })
+                    : ""}
+                </p>
+                <p className="text-sm text-gray-600">
+                  {nextSession ? (
+                    `${formatTimeWithIntl(
+                      nextSession.startTime
+                    )} - ${formatTimeWithIntl(nextSession.endTime)}`
+                  ) : (
+                    <p className="text-gray-500 italic text-base">
+                      Session Completed
+                    </p>
+                  )}
+                </p>
               </div>
               <div className="space-y-2">
                 <Label>Location</Label>
-                <p className="font-medium">Central Park</p>
-                <p className="text-sm text-gray-600">72nd St entrance</p>
+                <p className="font-medium">
+                  {nextSession ? nextSession.location : ""}
+                </p>
+                <p className="text-sm text-gray-600">
+                  {nextSession ? (
+                    nextSession.address
+                  ) : (
+                    <p className="text-gray-500 italic text-base">
+                      Session Completed
+                    </p>
+                  )}
+                </p>
               </div>
               <div className="space-y-2">
                 <Label>Progress</Label>
                 <div className="flex items-center space-x-2">
-                  <Progress value={25} className="h-2" />
-                  <span className="text-sm text-gray-600">1 of 4 sessions</span>
+                  <Progress
+                    value={(completedSessions / totalSessions) * 100}
+                    className="h-2"
+                  />
+                  <span className="text-sm text-gray-600">
+                    {completedSessions} of {totalSessions} sessions
+                  </span>
                 </div>
               </div>
             </div>
             <div className="mt-6 flex justify-end space-x-4">
-              <Link to="/messages">
-                <Button variant="outline">Message</Button>
-              </Link>
-              <Button variant="outline">Reschedule</Button>
+              {isNextSessionCompleted ? (
+                <Button variant="outline">Rate Partner</Button>
+              ) : (
+                <div className="w-full flex items-center justify-between">
+                  <Button className="bg-red-600 hover:bg-red-700">
+                    Cancel Deal
+                  </Button>
+                  <div className="space-x-4">
+                    <Link to="/messages">
+                      <Button variant="outline">Message</Button>
+                    </Link>
+                    {active?.proposerId === currentUserId ? (
+                      <Button className="bg-blue-600 hover:bg-blue-700">
+                        Reschedule
+                      </Button>
+                    ) : (
+                      <Button className="bg-blue-600 hover:bg-blue-700">
+                        Request Reschedule
+                      </Button>
+                    )}
+                  </div>
+                </div>
+              )}
             </div>
           </>
         ) : (
@@ -96,7 +172,7 @@ const ActiveDealCard = ({ active }: { active: any }) => {
               <Button className="bg-red-600 hover:bg-red-700">
                 Cancel Deal
               </Button>
-              <div className="space-x-2">
+              <div className="space-x-4">
                 <Link to="/messages">
                   <Button variant="outline">Message</Button>
                 </Link>

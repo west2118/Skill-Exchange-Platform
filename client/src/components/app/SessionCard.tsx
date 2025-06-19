@@ -35,6 +35,7 @@ const SessionCard = ({
         <h3 className="font-medium text-lg">Session {index + 1}</h3>
         <Button
           variant="ghost"
+          type="button"
           size="sm"
           onClick={() => handleRemoveSession(index)}
           className="text-red-500 hover:bg-red-50">
@@ -63,7 +64,12 @@ const SessionCard = ({
                 mode="single"
                 selected={session.date ? new Date(session.date) : undefined}
                 onSelect={(date) =>
-                  date && handleSessionChange(index, "date", date.toISOString())
+                  date &&
+                  handleSessionChange(
+                    index,
+                    "date",
+                    date.toISOString().split("T")[0] // → "2024-06-20"
+                  )
                 }
                 initialFocus
               />

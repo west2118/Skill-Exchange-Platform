@@ -1,4 +1,5 @@
 import { createRequire } from "module";
+import http from "http";
 import express from "express";
 import cookieParser from "cookie-parser";
 import cors from "cors";
@@ -8,12 +9,14 @@ import dotenv from "dotenv";
 dotenv.config();
 
 const app = express();
+const server = http.createServer(app);
 
 import authRoutes from "./routes/authRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
 import postRoutes from "./routes/postRoutes.js";
 import exchangeRoutes from "./routes/exchangeRoutes.js";
 import dealRoutes from "./routes/dealRoutes.js";
+import { registerSocketServer } from "./lib/socket.js";
 
 const require = createRequire(import.meta.url);
 const serviceAccount = require("./serviceAccountKey.json");
@@ -31,6 +34,8 @@ app.use(
     credentials: true,
   })
 );
+
+export const io = registerSocketServer(server);
 
 mongoose
   .connect(process.env.MONGO_URL)

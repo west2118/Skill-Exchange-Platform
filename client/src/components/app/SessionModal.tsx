@@ -5,6 +5,8 @@ import ReactDOM from "react-dom";
 import { useAppSelector } from "@/hooks/useAppSelector";
 import { formatTimeWithIntl } from "@/constants/formatTimeWithInt";
 import { useEffect } from "react";
+import { privateApi } from "@/utils/axios";
+import { toast } from "react-toastify";
 
 type SessionModalProps = {
   isModalOpen: boolean;
@@ -17,6 +19,8 @@ export function SessionModal({
   dealId,
   onCloseModal,
 }: SessionModalProps) {
+  const token = useAppSelector((state) => state.user.currentUserToken);
+  const currentUserId = useAppSelector((state) => state.user.currentUserId);
   const deals = useAppSelector((state) => state.deal.deals);
   const deal = deals.find((deal) => deal._id === dealId);
 
@@ -31,6 +35,24 @@ export function SessionModal({
       document.body.classList.remove("overflow-hidden");
     };
   }, [isModalOpen]);
+
+  const handleSubmitExchange = async () => {
+    try {
+      const response = await privateApi.put(
+        `http://localhost:8080/api/session-deal/${currentUserId}`,
+        { dealId },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      toast.success(response?.data?.message);
+    } catch (error: any) {
+      toast.error(error.response?.data?.message || error.message);
+    }
+  };
 
   if (!isModalOpen) return null;
 
@@ -72,7 +94,6 @@ export function SessionModal({
                     weekday: "long",
                     month: "long",
                     day: "numeric",
-                    timeZone: "UTC",
                   })}
                 </CardTitle>
               </CardHeader>
@@ -107,8 +128,12 @@ export function SessionModal({
 
         {/* Modal Footer */}
         <div className="pt-4 border-t p-6 flex justify-end space-x-2">
-          <Button className="outline">Request Changes</Button>
-          <Button className="bg-green-600 hover:bg-green-700">
+          <Button type="button" className="outline">
+            Request Changes
+          </Button>
+          <Button
+            onClick={handleSubmitExchange}
+            className="bg-green-600 hover:bg-green-700">
             Accept Sessions
           </Button>
         </div>
