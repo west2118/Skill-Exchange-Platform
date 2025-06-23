@@ -5,6 +5,8 @@ import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { Loading } from "./Loading";
 import { useEffect, useState } from "react";
+import { useAppSelector } from "@/hooks/useAppSelector";
+import useFetchData from "@/hooks/useFetchData";
 
 type CurrentUser = {
   _id: string;
@@ -26,6 +28,12 @@ const Navbar = () => {
   const users = useSelector((state: any) => state.user.users);
   const [user, loading] = useAuthState(auth);
   const [currentUser, setCurrentUser] = useState<CurrentUser | null>(null);
+  const token = useAppSelector((state) => state.user.currentUserToken);
+  const currentUserId = useAppSelector((state) => state.user.currentUserId);
+  const { data } = useFetchData<CurrentUser[]>(
+    `http://localhost:8080/api/sidebar-messages/${currentUserId}`,
+    token
+  );
 
   useEffect(() => {
     if (loading) {
@@ -76,7 +84,7 @@ const Navbar = () => {
               <Link to="/dashboard">
                 <Button variant="ghost">Dashboard</Button>
               </Link>
-              <Link to="/messages">
+              <Link to={`/messages/${data?.[0].uid}`}>
                 <Button variant="ghost">Messages</Button>
               </Link>
               <Link to="/deals">

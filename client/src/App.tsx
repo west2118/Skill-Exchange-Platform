@@ -33,7 +33,6 @@ import { fetchExchanges } from "./store/exchangeSlice";
 import ProtectedLayout from "./utils/ProtectedLayout";
 import { SessionExchangeForm } from "./pages/SessionExchangeForm";
 import { fetchDeals } from "./store/dealSlice";
-import { SessionModal } from "./components/app/SessionModal";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -45,11 +44,10 @@ const router = createBrowserRouter(
 
         <Route element={<ProtectedLayout />}>
           <Route path="dashboard" element={<NewsfeedPage />} />
-          <Route path="session-modal" element={<SessionModal />} />
           <Route path="onboarding" element={<OnboardingPage />} />
           <Route path="profile/:id" element={<UserProfilePage />} />
           <Route path="deals" element={<DealStatusPage />} />
-          <Route path="messages" element={<ChatPage />} />
+          <Route path="messages/:id" element={<ChatPage />} />
           <Route path="completion" element={<CompletionPage />} />
           <Route path="create-exchange" element={<CreatePostPage />} />
           <Route

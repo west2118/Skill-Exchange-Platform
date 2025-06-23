@@ -16,7 +16,9 @@ import userRoutes from "./routes/userRoutes.js";
 import postRoutes from "./routes/postRoutes.js";
 import exchangeRoutes from "./routes/exchangeRoutes.js";
 import dealRoutes from "./routes/dealRoutes.js";
+import messageRoutes from "./routes/messageRoutes.js";
 import { registerSocketServer } from "./lib/socket.js";
+import { onlineUsers } from "./lib/socket.js";
 
 const require = createRequire(import.meta.url);
 const serviceAccount = require("./serviceAccountKey.json");
@@ -37,12 +39,20 @@ app.use(
 
 export const io = registerSocketServer(server);
 
+app.get("/debug/online-users", (req, res) => {
+  res.json(Object.fromEntries(onlineUsers));
+});
+
 mongoose
   .connect(process.env.MONGO_URL)
   .then(() => {
     console.log("Connected to MongoDB successfully!");
-    app.listen(process.env.PORT, () => {
-      console.log("Server running");
+
+    // ✅ Listen with the HTTP server (not app)
+    server.listen(process.env.PORT, () => {
+      console.log(
+        `🚀 Server + Socket.IO running on http://localhost:${process.env.PORT}`
+      );
     });
   })
   .catch((err) => console.log(err));
@@ -52,3 +62,4 @@ app.use("/api/", userRoutes);
 app.use("/api/", postRoutes);
 app.use("/api/", exchangeRoutes);
 app.use("/api/", dealRoutes);
+app.use("/api/", messageRoutes);

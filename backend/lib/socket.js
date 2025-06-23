@@ -1,32 +1,51 @@
 import { Server } from "socket.io";
 import admin from "firebase-admin";
 
-const onlineUsers = new Map();
+export const onlineUsers = new Map();
 
 export const registerSocketServer = (server) => {
   const io = new Server(server, {
-    cors: { origin: "*" },
-  });
-
-  io.use(async (socket, next) => {
-    const token = socket.handshake.auth.token;
-    if (!token) return next(new Error("No auth token"));
-
-    try {
-      const decoded = await admin.auth().verifyIdToken(token);
-      socket.data.userId = decoded.uid;
-      next();
-    } catch (error) {
-      return next(new Error("Invalid token"));
-    }
+    cors: {
+      origin: "http://localhost:5173",
+      methods: ["GET", "POST"],
+      credentials: true,
+    },
   });
 
   io.on("connection", (socket) => {
-    const userId = socket.data.userId;
-    onlineUsers.set(userId, socket.id);
+    console.log("🔌 New socket connected:", socket.id);
+
+    socket.on("authenticate", async (data) => {
+      try {
+        if (!data || !data.token) {
+          console.warn("⚠️ No token received in authenticate");
+          return socket.disconnect();
+        }
+
+        const decoded = await admin.auth().verifyIdToken(data.token);
+        const userId = decoded.uid;
+
+        socket.data.userId = userId;
+
+        console.log("✅ Set socket ID for user:", userId, "➡", socket.id);
+
+        onlineUsers.set(userId, socket.id);
+
+        console.log(`✅ User authenticated: ${userId}`);
+      } catch (err) {
+        console.error("❌ Firebase token error:", err.message);
+        socket.disconnect(); // safely disconnect if auth fails
+      }
+    });
 
     socket.on("disconnect", () => {
-      onlineUsers.delete(userId);
+      const userId = socket.data.userId;
+      if (userId) {
+        onlineUsers.delete(userId);
+        console.log(`🔌 User disconnected: ${userId}`);
+      } else {
+        console.log("🔌 Socket disconnected (no user ID)");
+      }
     });
   });
 
