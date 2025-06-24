@@ -5,7 +5,8 @@ import { privateApi } from "@/utils/axios";
 import { useEffect, useState } from "react";
 import ReactDOM from "react-dom";
 import { toast } from "react-toastify";
-import { Label } from "@/components/ui/label";
+import { useDispatch } from "react-redux";
+import { addExchange } from "@/store/exchangeSlice";
 
 type ProposedModalProps = {
   isModalOpen: boolean;
@@ -16,6 +17,7 @@ type ProposedModalProps = {
   receiverId: string;
   postId: string;
   exchangeId: string | null;
+  onRefresh?: () => void | null;
 };
 
 const ProposedModal = ({
@@ -27,7 +29,9 @@ const ProposedModal = ({
   receiverId,
   postId,
   exchangeId,
+  onRefresh,
 }: ProposedModalProps) => {
+  const dispatch = useDispatch();
   const token = useAppSelector((state) => state.user.currentUserToken);
   const currentUserId = useAppSelector((state) => state.user.currentUserId);
   const exchanges = useAppSelector((state) => state.exchange.exchanges);
@@ -83,8 +87,11 @@ const ProposedModal = ({
           },
         }
       );
-      isCancel();
+
       toast.success(response?.data?.message);
+      dispatch(addExchange(response?.data?.newExchange));
+      onRefresh?.();
+      isCancel();
     } catch (error: any) {
       toast.error(error.response?.data?.message || error.message);
     }

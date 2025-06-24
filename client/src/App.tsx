@@ -48,8 +48,15 @@ const router = createBrowserRouter(
           <Route path="profile/:id" element={<UserProfilePage />} />
           <Route path="deals" element={<DealStatusPage />} />
           <Route path="messages/:id" element={<ChatPage />} />
-          <Route path="completion" element={<CompletionPage />} />
-          <Route path="create-exchange" element={<CreatePostPage />} />
+          <Route path="completion/:id" element={<CompletionPage />} />
+          <Route
+            path="create-exchange"
+            element={<CreatePostPage isEdit={false} />}
+          />
+          <Route
+            path="edit-exchange/:id"
+            element={<CreatePostPage isEdit={true} />}
+          />
           <Route
             path="add-session/:id"
             element={<SessionExchangeForm isEdit={false} />}

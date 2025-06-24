@@ -81,10 +81,10 @@ const Navbar = () => {
         <nav className="flex items-center space-x-6">
           {currentUser && currentUser._id ? (
             <>
-              <Link to="/dashboard">
+              <Link to="/dashboard?tab=nearby">
                 <Button variant="ghost">Dashboard</Button>
               </Link>
-              <Link to={`/messages/${data?.[0].uid}`}>
+              <Link to={`/messages/${data?.[0]?.uid}`}>
                 <Button variant="ghost">Messages</Button>
               </Link>
               <Link to="/deals">

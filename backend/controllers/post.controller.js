@@ -34,6 +34,38 @@ const postPost = async (req, res) => {
   }
 };
 
+const putPost = async (req, res) => {
+  const { id } = req.params;
+
+  console.log(req.body);
+
+  try {
+    const user = await User.findById(req.body.userId);
+    if (!user) {
+      return res.status(400).json({ message: "User didn't exist" });
+    }
+
+    const post = await Post.findById(id);
+    if (!post) {
+      return res.status(400).json({ message: "Post didn't exist" });
+    }
+
+    if (post.userId.toString() !== req.body.userId) {
+      return res
+        .status(400)
+        .json({ message: "You don't have Authorized in this post" });
+    }
+
+    const updatedPost = await Post.findByIdAndUpdate(id, req.body, {
+      new: true,
+    });
+
+    res.status(200).json({ message: "Post Edited Successfully", updatedPost });
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
+
 const getPosts = async (req, res) => {
   try {
     const posts = await Post.find({});
@@ -121,4 +153,11 @@ const getPerfectMatch = async (req, res) => {
   }
 };
 
-export { postPost, getPosts, getNearbyPosts, getUserPost, getPerfectMatch };
+export {
+  postPost,
+  getPosts,
+  getNearbyPosts,
+  getUserPost,
+  getPerfectMatch,
+  putPost,
+};

@@ -24,7 +24,7 @@ const getUserExchange = async (req, res) => {
 
     const userExchanges = await Exchange.find({
       $or: [{ proposerId: id }, { receiverId: id }],
-      status: { $ne: "Exchanged" },
+      status: "Pending",
     });
     if (!userExchanges) return;
 

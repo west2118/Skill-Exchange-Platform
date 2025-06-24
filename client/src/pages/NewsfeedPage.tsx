@@ -2,13 +2,20 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { MapPin as MapPinIcon } from "lucide-react";
 import { Filter as FilterIcon } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import NearbyTab from "./newsfeedTabs/NearbyTab";
 import MyPostTab from "./newsfeedTabs/MyPostTab";
 import MutualExchangeTab from "./newsfeedTabs/MutualExchangeTab";
 import MatchedPost from "./newsfeedTabs/MatchedPost";
 
 export default function NewsfeedPage() {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const tab = searchParams.get("tab") || "nearby";
+
+  const handleTabChange = (value: string) => {
+    setSearchParams({ tab: value });
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Main Dashboard Content */}
@@ -29,7 +36,7 @@ export default function NewsfeedPage() {
         </div>
 
         {/* Main Tabs */}
-        <Tabs defaultValue="nearby" className="w-full">
+        <Tabs value={tab} onValueChange={handleTabChange} className="w-full">
           <TabsList className="grid w-full grid-cols-4">
             <TabsTrigger value="nearby">
               <MapPinIcon className="mr-2 h-4 w-4" />
@@ -40,17 +47,10 @@ export default function NewsfeedPage() {
             <TabsTrigger value="my-post">My Posts</TabsTrigger>
           </TabsList>
 
-          {/* Nearby Users Tab */}
-          <NearbyTab />
-
-          {/* Skill Matches Tab */}
-          <MatchedPost />
-
-          {/* Mutual Exchanges Tab */}
-          <MutualExchangeTab />
-
-          {/* My Posts */}
-          <MyPostTab />
+          {tab === "nearby" && <NearbyTab />}
+          {tab === "skills" && <MatchedPost />}
+          {tab === "mutual" && <MutualExchangeTab />}
+          {tab === "my-post" && <MyPostTab />}
         </Tabs>
       </main>
     </div>

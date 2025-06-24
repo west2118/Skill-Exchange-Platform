@@ -7,8 +7,6 @@ const postDeal = async (req, res) => {
   const { id } = req.params;
   const { proposerId, postId, exchangeId, skillOffer, skillSeek } = req.body;
 
-  console.log(proposerId, postId, exchangeId, skillOffer, skillSeek);
-
   try {
     const newDeal = await Deal.create({
       proposerId,

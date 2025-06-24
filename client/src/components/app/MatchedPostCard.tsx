@@ -12,8 +12,10 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "../ui/button";
 import { useSelector } from "react-redux";
 import ProposedModal from "./ProposedModal";
+import { PostDetailsModal } from "./PostDetailsModal";
 
-const MatchedPostCard = ({ match }: { match: any }) => {
+const MatchedPostCard = ({ match, onRefresh }: any) => {
+  const [isModalDetailsOpen, setIsModalDetailsOpen] = useState<boolean>(false);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const users = useSelector((state: any) => state.user.users);
 
@@ -40,7 +42,9 @@ const MatchedPostCard = ({ match }: { match: any }) => {
         </div>
       </CardContent>
       <CardFooter className="flex justify-between">
-        <Button variant="outline">Details</Button>
+        <Button onClick={() => setIsModalDetailsOpen(true)} variant="outline">
+          View Details
+        </Button>
         <Button
           onClick={() => setIsModalOpen(true)}
           className="bg-emerald-600 hover:bg-emerald-700">
@@ -57,6 +61,14 @@ const MatchedPostCard = ({ match }: { match: any }) => {
         receiverId={match?.userId}
         postId={match?._id}
         exchangeId={null}
+        onRefresh={onRefresh}
+      />
+
+      <PostDetailsModal
+        isModalDetailsOpen={isModalDetailsOpen}
+        isClose={() => setIsModalDetailsOpen(false)}
+        item={match}
+        user={user}
       />
     </Card>
   );

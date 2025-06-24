@@ -19,23 +19,31 @@ import {
 import { Calendar as CalendarIcon } from "lucide-react";
 import { skills } from "../constants/skills";
 import { timeSlots } from "../constants/timeslots";
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { toast } from "react-toastify";
 import Selection from "@/components/app/Selection";
 import { format } from "date-fns";
 import { privateApi } from "@/utils/axios";
 import { useDispatch, useSelector } from "react-redux";
 import useAddressFromCoords from "@/hooks/useAddressFromCoords";
-import { addPost } from "@/store/postSlice";
-import { useNavigate } from "react-router-dom";
+import { addPost, editPost } from "@/store/postSlice";
+import { useNavigate, useParams } from "react-router-dom";
+import { useAppSelector } from "@/hooks/useAppSelector";
 
 const MemoizedSelection = React.memo(Selection);
 
-export default function CreatePostPage() {
+type CreatePostPageProps = {
+  isEdit: boolean;
+};
+
+export default function CreatePostPage({ isEdit }: CreatePostPageProps) {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const { id } = useParams();
+  const currentUserId = useSelector((state: any) => state.user.currentUserId);
   const token = useSelector((state: any) => state.user.currentUserToken);
   const userId = useSelector((state: any) => state.user.currentUserId);
+  const posts = useAppSelector((state: any) => state.post.posts);
   const [selectionData, setSelectionData] = useState({
     skillSeek: "",
     skillOffer: "",
@@ -53,6 +61,43 @@ export default function CreatePostPage() {
   const [selectedToDate, setSelectedToDate] = useState<Date | undefined>(
     undefined
   );
+
+  useEffect(() => {
+    if (isEdit && id) {
+      const post = posts.find((post: any) => post._id === id);
+      setSelectionData({
+        skillSeek: skills.includes(post?.skillSeek)
+          ? post?.skillSeek
+          : "Specific Skill",
+        skillOffer: skills.includes(post?.skillOffer)
+          ? post?.skillOffer
+          : "Specific Skill",
+        preferredTime: post?.preferredTime || "",
+      });
+      setSelectedFromDate(post?.availTimeFrom || "");
+      setSelectedToDate(post?.availTimeTo || "");
+      formData.current.description = post?.description || "";
+      formData.current.address = post?.address || "";
+      formData.current.specificSeekSkill = skills.includes(post?.skillSeek)
+        ? ""
+        : post?.skillSeek;
+      formData.current.specificOfferSkill = skills.includes(post?.skillOffer)
+        ? ""
+        : post?.skillOffer;
+    } else {
+      setSelectionData({
+        skillSeek: "",
+        skillOffer: "",
+        preferredTime: "",
+      });
+      setSelectedFromDate(undefined);
+      setSelectedToDate(undefined);
+      formData.current.description = "";
+      formData.current.address = "";
+      formData.current.specificSeekSkill = "";
+      formData.current.specificOfferSkill = "";
+    }
+  }, [isEdit, id, posts]);
 
   const { error, loading, fetchAddress } = useAddressFromCoords();
 
@@ -104,31 +149,62 @@ export default function CreatePostPage() {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
+    const isAlreadyFormatted = (value: any) =>
+      typeof value === "string" && /\d{1,2}\/\d{1,2}\/\d{2,4}/.test(value);
+
     const postData = {
       skillSeek: isSpecificSeekSkill,
       skillOffer: isSpecificOfferSkill,
       description: formData.current.description,
       availTimeFrom: selectedFromDate
-        ? selectedFromDate.toLocaleDateString()
+        ? isAlreadyFormatted(selectedFromDate)
+          ? selectedFromDate
+          : selectedFromDate.toLocaleDateString()
         : "",
-      availTimeTo: selectedToDate ? selectedToDate.toLocaleDateString() : "",
+
+      availTimeTo: selectedToDate
+        ? isAlreadyFormatted(selectedToDate)
+          ? selectedToDate
+          : selectedToDate.toLocaleDateString()
+        : "",
       preferredTime: selectionData.preferredTime,
       address: formData.current.address,
     };
 
     try {
-      const response = await privateApi.post(
-        `http://localhost:8080/api/post/${userId}`,
-        postData,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      let response;
+      if (isEdit && id) {
+        response = await privateApi.put(
+          `http://localhost:8080/api/post/${id}`,
+          { ...postData, userId: currentUserId },
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+      } else {
+        response = await privateApi.post(
+          `http://localhost:8080/api/post/${userId}`,
+          postData,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+      }
 
-      dispatch(addPost(response?.data?.newPost));
+      if (isEdit && id) {
+        dispatch(
+          editPost({ postId: id, newData: response?.data?.updatedPost })
+        );
+      } else {
+        dispatch(addPost(response?.data?.newPost));
+      }
+
       toast.success(response?.data?.message);
+      navigate("/dashboard?tab=my-post");
     } catch (error: any) {
       toast.error(error.message);
     }
@@ -142,7 +218,9 @@ export default function CreatePostPage() {
           <form onSubmit={handleSubmit}>
             <Card>
               <CardHeader>
-                <CardTitle>Create New Post</CardTitle>
+                <CardTitle>
+                  {isEdit && id ? "Edit" : "Create New"} Post
+                </CardTitle>
                 <CardDescription>
                   Share what skill you're offering or seeking in your community
                 </CardDescription>
@@ -348,11 +426,14 @@ export default function CreatePostPage() {
                 </div>
               </CardContent>
               <CardFooter className="flex justify-end space-x-4">
-                <Button type="button" variant="outline">
+                <Button
+                  onClick={() => navigate(-1)}
+                  type="button"
+                  variant="outline">
                   Cancel
                 </Button>
                 <Button className="bg-emerald-600 hover:bg-emerald-700">
-                  Create Post
+                  {isEdit && id ? "Edit" : "Create"} Post
                 </Button>
               </CardFooter>
             </Card>

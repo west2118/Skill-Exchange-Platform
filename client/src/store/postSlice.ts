@@ -34,9 +34,18 @@ const postSlice = createSlice({
     addPost: (state, action) => {
       state.posts.push(action.payload);
     },
+    editPost: (state, action) => {
+      const { postId, newData } = action.payload;
+
+      const postIndex = state.posts.findIndex((post) => post._id === postId);
+
+      if (postIndex !== -1) {
+        state.posts[postIndex] = newData;
+      }
+    },
   },
 });
 
-export const { fetchPosts, addPost } = postSlice.actions;
+export const { fetchPosts, addPost, editPost } = postSlice.actions;
 
 export default postSlice.reducer;

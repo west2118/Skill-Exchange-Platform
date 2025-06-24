@@ -13,12 +13,20 @@ import ProposedModal from "./ProposedModal";
 import { useState } from "react";
 import { privateApi } from "@/utils/axios";
 import { toast } from "react-toastify";
+import { useDispatch } from "react-redux";
+import { editExchange } from "@/store/exchangeSlice";
+import { PostDetailsModal } from "./PostDetailsModal";
 
-const MutualExchangeCard = ({ exchange }: any) => {
+const MutualExchangeCard = ({ exchange, onRefresh }: any) => {
+  const dispatch = useDispatch();
   const token = useAppSelector((state) => state.user.currentUserToken);
-  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const users = useAppSelector((state: any) => state.user.users);
+  const posts = useAppSelector((state: any) => state.post.posts);
   const currentUserId = useAppSelector((state) => state.user.currentUserId);
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const [isModalDetailsOpen, setIsModalDetailsOpen] = useState<boolean>(false);
+
+  const post = posts.find((post: any) => post._id === exchange.postId);
 
   const otherUserId =
     exchange.receiverId === currentUserId
@@ -49,8 +57,17 @@ const MutualExchangeCard = ({ exchange }: any) => {
         }
       );
 
-      setIsModalOpen(false);
+      console.log(response?.data?.updatedExchange);
+
+      onRefresh();
+      dispatch(
+        editExchange({
+          exchangeId: exchange._id,
+          newData: response?.data?.updatedExchange,
+        })
+      );
       toast.success(response?.data?.message);
+      setIsModalOpen(false);
     } catch (error: any) {
       toast.error(error.response?.data?.message || error.message);
     }
@@ -78,6 +95,7 @@ const MutualExchangeCard = ({ exchange }: any) => {
         }
       );
 
+      onRefresh();
       toast.success(response?.data?.message);
     } catch (error: any) {
       toast.error(error.response?.data?.message || error.message);
@@ -123,15 +141,20 @@ const MutualExchangeCard = ({ exchange }: any) => {
         exchange.status === "Pending" ? (
           <div className="flex justify-between w-full">
             <Button className="bg-red-600 hover:bg-red-700">Decline</Button>
-            <div className="space-x-2">
+            <div className="w-full flex items-center justify-between">
               <Button onClick={() => setIsModalOpen(true)} variant="outline">
-                View Proposal
+                View Details
               </Button>
-              <Button
-                onClick={handleAcceptProposal}
-                className="bg-emerald-600 hover:bg-emerald-700">
-                Confirm
-              </Button>
+              <div className="space-x-2">
+                <Button onClick={() => setIsModalOpen(true)} variant="outline">
+                  View Proposal
+                </Button>
+                <Button
+                  onClick={handleAcceptProposal}
+                  className="bg-emerald-600 hover:bg-emerald-700">
+                  Confirm
+                </Button>
+              </div>
             </div>
           </div>
         ) : exchange.status === "Cancelled" ||
@@ -141,15 +164,22 @@ const MutualExchangeCard = ({ exchange }: any) => {
           </div>
         ) : (
           <div className="flex justify-end w-full">
-            <div className="space-x-2 justify-end">
-              <Button onClick={() => setIsModalOpen(true)} variant="outline">
-                View Proposal
-              </Button>
+            <div className="w-full flex items-center justify-between">
               <Button
-                onClick={handleCancelProposal}
-                className="bg-red-600 hover:bg-red-700">
-                Cancel Proposal
+                onClick={() => setIsModalDetailsOpen(true)}
+                variant="outline">
+                View Details
               </Button>
+              <div className="space-x-2 justify-end">
+                <Button onClick={() => setIsModalOpen(true)} variant="outline">
+                  View Proposal
+                </Button>
+                <Button
+                  onClick={handleCancelProposal}
+                  className="bg-red-600 hover:bg-red-700">
+                  Cancel Proposal
+                </Button>
+              </div>
             </div>
           </div>
         )}
@@ -163,6 +193,13 @@ const MutualExchangeCard = ({ exchange }: any) => {
           receiverId={otherUserId}
           postId={exchange.postId}
           exchangeId={exchange._id}
+        />
+
+        <PostDetailsModal
+          isModalDetailsOpen={isModalDetailsOpen}
+          isClose={() => setIsModalDetailsOpen(false)}
+          item={post}
+          user={otherUser}
         />
       </CardFooter>
     </Card>

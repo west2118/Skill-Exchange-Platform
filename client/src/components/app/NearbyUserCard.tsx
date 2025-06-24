@@ -13,8 +13,10 @@ import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import ProposedModal from "./ProposedModal";
 import { useState } from "react";
+import { PostDetailsModal } from "./PostDetailsModal";
 
-const NearbyUserCard = ({ item }: any) => {
+const NearbyUserCard = ({ item, onRefresh }: any) => {
+  const [isModalDetailsOpen, setIsModalDetailsOpen] = useState<boolean>(false);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const users = useSelector((state: any) => state.user.users);
 
@@ -49,7 +51,9 @@ const NearbyUserCard = ({ item }: any) => {
         </div>
       </CardContent>
       <CardFooter className="flex justify-between">
-        <Button variant="outline">View Details</Button>
+        <Button onClick={() => setIsModalDetailsOpen(true)} variant="outline">
+          View Details
+        </Button>
         <Button
           onClick={() => setIsModalOpen(true)}
           className="bg-emerald-600 hover:bg-emerald-700">
@@ -66,6 +70,14 @@ const NearbyUserCard = ({ item }: any) => {
         receiverId={item?.userId}
         postId={item?._id}
         exchangeId={null}
+        onRefresh={onRefresh}
+      />
+
+      <PostDetailsModal
+        isModalDetailsOpen={isModalDetailsOpen}
+        isClose={() => setIsModalDetailsOpen(false)}
+        item={item}
+        user={user}
       />
     </Card>
   );

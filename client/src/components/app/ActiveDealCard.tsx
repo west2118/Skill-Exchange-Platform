@@ -22,7 +22,22 @@ const ActiveDealCard = ({ active }: { active: any }) => {
   const users = useAppSelector((state) => state.user.users);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
-  const user = users.find((user) => user._id === active.proposerId);
+  const otherUserId =
+    active?.receiverId === currentUserId
+      ? active?.proposerId
+      : active?.receiverId;
+
+  const otherUser = users.find((user: any) => user._id === otherUserId);
+
+  const yourSkill =
+    active?.receiverId === currentUserId
+      ? active?.skillOffer
+      : active?.skillSeek;
+
+  const otherSkill =
+    active?.receiverId === currentUserId
+      ? active?.skillSeek
+      : active?.skillOffer;
 
   const isSessionCompleted = (session: any) => {
     const end = new Date(session.date);
@@ -52,14 +67,14 @@ const ActiveDealCard = ({ active }: { active: any }) => {
         <div className="flex items-center space-x-4">
           <Avatar>
             <AvatarImage src="/avatars/sarah.jpg" />
-            <AvatarFallback>{`${user?.firstName.charAt(
+            <AvatarFallback>{`${otherUser?.firstName.charAt(
               0
-            )}${user?.lastName.charAt(0)}`}</AvatarFallback>
+            )}${otherUser?.lastName.charAt(0)}`}</AvatarFallback>
           </Avatar>
           <div>
-            <CardTitle>{`${user?.firstName} ${user?.lastName}`}</CardTitle>
+            <CardTitle>{`${otherUser?.firstName} ${otherUser?.lastName}`}</CardTitle>
             <CardDescription>
-              your {active?.skillOffer} ↔ {active?.skillSeek}
+              your {yourSkill} ↔ {otherSkill}
             </CardDescription>
           </div>
         </div>
@@ -124,14 +139,18 @@ const ActiveDealCard = ({ active }: { active: any }) => {
             </div>
             <div className="mt-6 flex justify-end space-x-4">
               {isNextSessionCompleted ? (
-                <Button variant="outline">Rate Partner</Button>
+                <Link to={`/completion/${active._id}`}>
+                  <Button className="bg-blue-600 hover:bg-blue-700">
+                    Rate Partner
+                  </Button>
+                </Link>
               ) : (
                 <div className="w-full flex items-center justify-between">
                   <Button className="bg-red-600 hover:bg-red-700">
                     Cancel Deal
                   </Button>
                   <div className="space-x-4">
-                    <Link to="/messages">
+                    <Link to={`/messages/${otherUser?.uid}`}>
                       <Button variant="outline">Message</Button>
                     </Link>
                     {active?.proposerId === currentUserId ? (
@@ -173,7 +192,7 @@ const ActiveDealCard = ({ active }: { active: any }) => {
                 Cancel Deal
               </Button>
               <div className="space-x-4">
-                <Link to="/messages">
+                <Link to={`/messages/${otherUser?.uid}`}>
                   <Button variant="outline">Message</Button>
                 </Link>
                 {active?.proposerId === currentUserId ? (

@@ -17,9 +17,14 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { MoreVertical } from "lucide-react";
 import { useSelector } from "react-redux";
+import { Badge } from "../ui/badge";
+import { PostDetailsModal } from "./PostDetailsModal";
+import { useState } from "react";
+import { Link } from "react-router-dom";
 
 const MyPostCard = ({ item }: any) => {
   const users = useSelector((state: any) => state.user.users);
+  const [isModalDetailsOpen, setIsModalDetailsOpen] = useState<boolean>(false);
 
   const user = users.find((user: any) => item.userId === user._id);
 
@@ -55,7 +60,9 @@ const MyPostCard = ({ item }: any) => {
             <DropdownMenuItem className="text-red-600 focus:bg-red-50 focus:text-red-600">
               Delete
             </DropdownMenuItem>
-            <DropdownMenuItem>Edit</DropdownMenuItem>
+            <DropdownMenuItem asChild>
+              <Link to={`/edit-exchange/${item._id}`}>Edit</Link>
+            </DropdownMenuItem>
             <DropdownMenuItem>Cancel Post</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
@@ -73,10 +80,24 @@ const MyPostCard = ({ item }: any) => {
         </div>
       </CardContent>
       <CardFooter>
-        <Button className="bg-emerald-600 hover:bg-emerald-700">
-          View Details
-        </Button>
+        <div className="w-full flex items-center justify-between">
+          <Button
+            onClick={() => setIsModalDetailsOpen(true)}
+            className="bg-emerald-600 hover:bg-emerald-700">
+            View Details
+          </Button>
+          <Badge variant={item.status === "Exchanged" ? "default" : "outline"}>
+            {item.status}
+          </Badge>
+        </div>
       </CardFooter>
+
+      <PostDetailsModal
+        isModalDetailsOpen={isModalDetailsOpen}
+        isClose={() => setIsModalDetailsOpen(false)}
+        item={item}
+        user={user}
+      />
     </Card>
   );
 };

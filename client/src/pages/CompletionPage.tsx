@@ -9,10 +9,30 @@ import {
 } from "@/components/ui/card";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Label } from "@/components/ui/label";
-import { Badge } from "@/components/ui/badge";
-import { Progress } from "@/components/ui/progress";
+import { useParams } from "react-router-dom";
+import { useAppSelector } from "@/hooks/useAppSelector";
+import { formatDate } from "@/constants/formatDate";
 
 export default function CompletionPage() {
+  const { id } = useParams();
+  const currentUserId = useAppSelector((state) => state.user.currentUserId);
+  const deals = useAppSelector((state) => state.deal.deals);
+  const users = useAppSelector((state) => state.user.users);
+
+  const deal = deals.find((deal: any) => deal._id === id);
+
+  const currentUserInfo = users.find((user) => user._id === currentUserId);
+  const otherUserId =
+    deal?.receiverId === currentUserId ? deal?.proposerId : deal?.receiverId;
+
+  const otherUser = users.find((user: any) => user._id === otherUserId);
+
+  const yourSkill =
+    deal?.receiverId === currentUserId ? deal?.skillOffer : deal?.skillSeek;
+
+  const otherSkill =
+    deal?.receiverId === currentUserId ? deal?.skillSeek : deal?.skillOffer;
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100">
       {/* Main Content */}
@@ -20,14 +40,10 @@ export default function CompletionPage() {
         <div className="mx-auto max-w-3xl space-y-8">
           {/* Success Banner */}
           <Card className="border-emerald-200 bg-emerald-50">
-            <CardHeader className="text-center">
+            <CardHeader className="text-center gap-0">
               <CardTitle className="text-emerald-800">
                 Exchange Completed Successfully! 🎉
               </CardTitle>
-              <CardDescription className="text-emerald-700">
-                You've earned 15 LocalLoop points for completing this skill
-                exchange
-              </CardDescription>
             </CardHeader>
           </Card>
 
@@ -45,22 +61,30 @@ export default function CompletionPage() {
                   <div className="flex items-center space-x-3">
                     <Avatar>
                       <AvatarImage src="/avatars/user.jpg" />
-                      <AvatarFallback>YO</AvatarFallback>
+                      <AvatarFallback>{`${currentUserInfo?.firstName.charAt(
+                        0
+                      )}${currentUserInfo?.lastName.charAt(
+                        0
+                      )}`}</AvatarFallback>
                     </Avatar>
                     <div>
                       <h3 className="font-medium">You Provided</h3>
-                      <p className="text-sm text-gray-600">
-                        Spanish Conversation Practice
-                      </p>
+                      <p className="text-sm text-gray-600">{yourSkill}</p>
                     </div>
                   </div>
                   <div className="space-y-2">
                     <Label>Sessions Completed</Label>
-                    <p className="font-medium">4 sessions (1 hour each)</p>
+                    <p className="font-medium">
+                      {deal?.sessions?.length} sessions
+                    </p>
                   </div>
                   <div className="space-y-2">
                     <Label>Dates</Label>
-                    <p className="font-medium">June 10, 17, 24, July 1</p>
+                    <p className="font-medium">
+                      {deal?.sessions
+                        ?.map((session: any) => formatDate(session.date))
+                        .join(", ")}
+                    </p>
                   </div>
                 </div>
 
@@ -72,21 +96,21 @@ export default function CompletionPage() {
                     </Avatar>
                     <div>
                       <h3 className="font-medium">Sarah Provided</h3>
-                      <p className="text-sm text-gray-600">
-                        Bicycle Repair Services
-                      </p>
+                      <p className="text-sm text-gray-600">{otherSkill}</p>
                     </div>
                   </div>
                   <div className="space-y-2">
                     <Label>Services Performed</Label>
                     <p className="font-medium">
-                      Brake adjustment, gear tuning, 2 flat tires fixed
+                      {`${yourSkill}, ${otherSkill}`}
                     </p>
                   </div>
                   <div className="space-y-2">
                     <Label>Location</Label>
                     <p className="font-medium">
-                      Central Park - 72nd St entrance
+                      {deal?.sessions
+                        ?.map((session: any) => session.location)
+                        .join(", ")}
                     </p>
                   </div>
                 </div>
@@ -110,63 +134,11 @@ export default function CompletionPage() {
                   {[1, 2, 3, 4, 5].map((star) => (
                     <button
                       key={star}
-                      className="h-10 w-10 text-2xl focus:outline-none">
+                      className="h-10 w-10 text-2xl focus:outline-none text-yellow-300">
                       {star <= 4 ? "★" : "☆"}
                     </button>
                   ))}
                   <span className="ml-2 text-gray-600">4 stars</span>
-                </div>
-              </div>
-
-              {/* Detailed Ratings */}
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                <div className="space-y-2">
-                  <Label>Skill Quality</Label>
-                  <div className="flex items-center space-x-2">
-                    {[1, 2, 3, 4, 5].map((star) => (
-                      <button
-                        key={star}
-                        className="h-8 w-8 text-xl focus:outline-none">
-                        {star <= 5 ? "★" : "☆"}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-                <div className="space-y-2">
-                  <Label>Communication</Label>
-                  <div className="flex items-center space-x-2">
-                    {[1, 2, 3, 4, 5].map((star) => (
-                      <button
-                        key={star}
-                        className="h-8 w-8 text-xl focus:outline-none">
-                        {star <= 4 ? "★" : "☆"}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-                <div className="space-y-2">
-                  <Label>Punctuality</Label>
-                  <div className="flex items-center space-x-2">
-                    {[1, 2, 3, 4, 5].map((star) => (
-                      <button
-                        key={star}
-                        className="h-8 w-8 text-xl focus:outline-none">
-                        {star <= 5 ? "★" : "☆"}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-                <div className="space-y-2">
-                  <Label>Would Exchange Again</Label>
-                  <div className="flex items-center space-x-2">
-                    {[1, 2, 3, 4, 5].map((star) => (
-                      <button
-                        key={star}
-                        className="h-8 w-8 text-xl focus:outline-none">
-                        {star <= 5 ? "★" : "☆"}
-                      </button>
-                    ))}
-                  </div>
                 </div>
               </div>
 
@@ -190,57 +162,8 @@ export default function CompletionPage() {
             </CardFooter>
           </Card>
 
-          {/* Badge Earned Section */}
-          <Card>
-            <CardHeader>
-              <CardTitle>New Badge Earned!</CardTitle>
-              <CardDescription>
-                You've unlocked a special achievement for completing multiple
-                exchanges
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="flex flex-col items-center text-center p-6">
-                <div className="relative">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="80"
-                    height="80"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    className="text-yellow-400">
-                    <circle cx="12" cy="8" r="7"></circle>
-                    <polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"></polyline>
-                  </svg>
-                  <span className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-lg font-bold text-white">
-                    3
-                  </span>
-                </div>
-                <h3 className="mt-4 text-xl font-bold">Skill Sharer</h3>
-                <p className="mt-2 text-gray-600">
-                  Awarded for completing 3 successful skill exchanges
-                </p>
-                <div className="mt-4 flex items-center space-x-2">
-                  <span className="text-sm text-gray-500">
-                    Share your achievement:
-                  </span>
-                  <Button variant="outline" size="sm">
-                    Twitter
-                  </Button>
-                  <Button variant="outline" size="sm">
-                    Facebook
-                  </Button>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
           {/* Next Steps */}
-          <Card>
+          {/* <Card>
             <CardHeader>
               <CardTitle>What Would You Like To Do Next?</CardTitle>
             </CardHeader>
@@ -316,7 +239,7 @@ export default function CompletionPage() {
                 </Button>
               </div>
             </CardContent>
-          </Card>
+          </Card> */}
         </div>
       </main>
     </div>

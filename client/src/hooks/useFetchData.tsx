@@ -1,7 +1,11 @@
 import { privateApi } from "@/utils/axios";
 import { useEffect, useState } from "react";
 
-const useFetchData = <T,>(url: string, token: string | null) => {
+const useFetchData = <T,>(
+  url: string,
+  token: string | null,
+  deps: any[] = []
+) => {
   const [data, setData] = useState<T | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
@@ -41,7 +45,7 @@ const useFetchData = <T,>(url: string, token: string | null) => {
     return () => {
       controller.abort();
     };
-  }, [url, token]);
+  }, [url, token, ...deps]);
 
   return { data, loading, error };
 };

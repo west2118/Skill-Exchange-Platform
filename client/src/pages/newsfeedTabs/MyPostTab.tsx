@@ -1,7 +1,7 @@
-import { CardSkeletonLoading } from "@/components/app/CardSkeletonLoading";
 import { ErrorComponent } from "@/components/app/ErrorComponent";
-import { Loading } from "@/components/app/Loading";
+import LoadingSpinner from "@/components/app/LoadingSpinner";
 import MyPostCard from "@/components/app/MyPostCard";
+import { NoDataCard } from "@/components/app/NoDataCard";
 import { useAppSelector } from "@/hooks/useAppSelector";
 import useFetchData from "@/hooks/useFetchData";
 import { TabsContent } from "@radix-ui/react-tabs";
@@ -14,16 +14,21 @@ const MyPostTab = () => {
     token
   );
 
-  if (loading)
-    return <CardSkeletonLoading count={data?.length || 3} tabValue="my-post" />;
-  if (error) return <ErrorComponent message={error} />;
-
   return (
     <TabsContent value="my-post">
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {data &&
-          data.map((item: any) => <MyPostCard key={item._id} item={item} />)}
-      </div>
+      {loading ? (
+        <LoadingSpinner />
+      ) : error ? (
+        <ErrorComponent message={error} />
+      ) : data && data.length > 0 ? (
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          {data.map((item: any) => (
+            <MyPostCard key={item._id} item={item} />
+          ))}
+        </div>
+      ) : (
+        data && data.length === 0 && <NoDataCard variant="my-posts" />
+      )}
     </TabsContent>
   );
 };

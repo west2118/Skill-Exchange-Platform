@@ -31,9 +31,21 @@ const exchangeSlice = createSlice({
     addExchange: (state, action) => {
       state.exchanges.push(action.payload);
     },
+    editExchange: (state, action) => {
+      const { exchangeId, newData } = action.payload;
+
+      const exchangeIndex = state.exchanges.findIndex(
+        (exchange) => exchange._id === exchangeId
+      );
+
+      if (exchangeIndex !== -1) {
+        state.exchanges[exchangeIndex] = newData;
+      }
+    },
   },
 });
 
-export const { fetchExchanges, addExchange } = exchangeSlice.actions;
+export const { fetchExchanges, addExchange, editExchange } =
+  exchangeSlice.actions;
 
 export default exchangeSlice.reducer;
