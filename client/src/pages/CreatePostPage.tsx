@@ -206,7 +206,7 @@ export default function CreatePostPage({ isEdit }: CreatePostPageProps) {
       toast.success(response?.data?.message);
       navigate("/dashboard?tab=my-post");
     } catch (error: any) {
-      toast.error(error.message);
+      toast.error(error.response?.data?.message || error.message);
     }
   };
 

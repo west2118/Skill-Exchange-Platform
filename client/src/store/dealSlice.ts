@@ -1,6 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 type Deal = {
+  ratings: any;
   _id: string;
   proposerId: string;
   receiverId: string;
@@ -32,9 +33,18 @@ const dealSlice = createSlice({
     addDeal: (state, action) => {
       state.deals.push(action.payload);
     },
+    editDeal: (state, action) => {
+      const { dealId, newData } = action.payload;
+
+      const dealIndex = state.deals.findIndex((deal) => deal._id === dealId);
+
+      if (dealIndex !== -1) {
+        state.deals[dealIndex] = newData;
+      }
+    },
   },
 });
 
-export const { fetchDeals, addDeal } = dealSlice.actions;
+export const { fetchDeals, addDeal, editDeal } = dealSlice.actions;
 
 export default dealSlice.reducer;

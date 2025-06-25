@@ -180,4 +180,116 @@ const acceptDealSession = async (req, res) => {
   }
 };
 
-export { postDeal, getUserDeal, postSession, getAllDeal, acceptDealSession };
+const postReview = async (req, res) => {
+  const { id } = req.params;
+  const { dealId, rating, review, otherUserId } = req.body;
+
+  try {
+    const user = await User.findById(id);
+    if (!user) {
+      return res.status(400).json({ message: "User didn't exist" });
+    }
+
+    const otherUser = await User.findById(otherUserId);
+    if (!otherUser) {
+      return res.status(400).json({ message: "Other user didn't exist" });
+    }
+
+    const deal = await Deal.findById(dealId);
+    if (!deal) {
+      return res.status(400).json({ message: "Deal didn't exist" });
+    }
+
+    if (id === deal.proposerId.toString()) {
+      if (deal.ratings.proposerRated.hasRated) {
+        return res.status(400).json({ message: "Already rated" });
+      }
+
+      deal.ratings.proposerRated = {
+        hasRated: true,
+        userId: id,
+        rating,
+        review,
+      };
+    } else if (id === deal.receiverId.toString()) {
+      if (deal.ratings.receiverRated.hasRated) {
+        return res.status(400).json({ message: "Already rated" });
+      }
+
+      deal.ratings.receiverRated = {
+        hasRated: true,
+        userId: id,
+        rating,
+        review,
+      };
+    } else {
+      return res.status(403).json({ message: "Not authorized" });
+    }
+
+    await deal.save();
+
+    const updatedUser = await User.findByIdAndUpdate(
+      otherUserId,
+      {
+        $push: { reviews: { fromUserId: id, dealId, rating, review } },
+      },
+      { new: true }
+    );
+
+    const updatedDeal = await Deal.findById(dealId);
+
+    res.status(200).json({
+      message: "Review added successfully",
+      updatedDeal,
+      updatedUser,
+    });
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
+
+const markAsCompleted = async (req, res) => {
+  const { id } = req.params;
+  const { dealId } = req.body;
+
+  try {
+    const user = await User.findById(id);
+    if (!user) {
+      return res.status(400).json({ message: "User didn't exist" });
+    }
+    const deal = await Deal.findById(dealId);
+    if (!deal) {
+      return res.status(400).json({ message: "Deal didn't exist" });
+    }
+
+    if (
+      deal.proposerId.toString() !== id &&
+      deal.receiverId.toString() !== id
+    ) {
+      return res.status(403).json({ message: "Not authorized" });
+    }
+
+    const updatedDeal = await Deal.findByIdAndUpdate(
+      dealId,
+      { status: "Completed" },
+      { new: true }
+    );
+
+    res.status(200).json({
+      message: "Deal Completed Successfully!",
+      updatedDeal,
+    });
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
+
+export {
+  postDeal,
+  getUserDeal,
+  postSession,
+  getAllDeal,
+  acceptDealSession,
+  postReview,
+  markAsCompleted,
+};

@@ -15,9 +15,15 @@ import { Link, useNavigate } from "react-router-dom";
 import { SessionModal } from "./SessionModal";
 import { useState } from "react";
 import { formatTimeWithIntl } from "@/constants/formatTimeWithInt";
+import { privateApi } from "@/utils/axios";
+import { toast } from "react-toastify";
+import { useDispatch } from "react-redux";
+import { editDeal } from "@/store/dealSlice";
 
-const ActiveDealCard = ({ active }: { active: any }) => {
+const ActiveDealCard = ({ active, onRefresh }: any) => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const token = useAppSelector((state) => state.user.currentUserToken);
   const currentUserId = useAppSelector((state) => state.user.currentUserId);
   const users = useAppSelector((state) => state.user.users);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
@@ -60,6 +66,31 @@ const ActiveDealCard = ({ active }: { active: any }) => {
     ? isSessionCompleted(nextSession)
     : true;
   const totalSessions = active.sessions.length;
+
+  const handleMarkAsCompleted = async () => {
+    try {
+      const response = await privateApi.put(
+        `http://localhost:8080/api/deal-completed/${currentUserId}`,
+        { dealId: active._id },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      onRefresh();
+      toast.success(response?.data?.message);
+      dispatch(
+        editDeal({
+          dealId: active?._id,
+          newData: response?.data?.updatedDeal,
+        })
+      );
+    } catch (error: any) {
+      toast.error(error.response?.data?.message || error.message);
+    }
+  };
 
   return (
     <Card>
@@ -139,11 +170,11 @@ const ActiveDealCard = ({ active }: { active: any }) => {
             </div>
             <div className="mt-6 flex justify-end space-x-4">
               {isNextSessionCompleted ? (
-                <Link to={`/completion/${active._id}`}>
-                  <Button className="bg-blue-600 hover:bg-blue-700">
-                    Rate Partner
-                  </Button>
-                </Link>
+                <Button
+                  onClick={handleMarkAsCompleted}
+                  className="bg-blue-600 hover:bg-blue-700">
+                  Mark As Completed
+                </Button>
               ) : (
                 <div className="w-full flex items-center justify-between">
                   <Button className="bg-red-600 hover:bg-red-700">
@@ -223,6 +254,7 @@ const ActiveDealCard = ({ active }: { active: any }) => {
       </CardContent>
 
       <SessionModal
+        otherUserId={otherUser?.uid}
         isModalOpen={isModalOpen}
         onCloseModal={() => setIsModalOpen(false)}
         dealId={active._id}

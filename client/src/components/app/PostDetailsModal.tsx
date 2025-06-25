@@ -24,8 +24,8 @@ type Item = {
 type PostDetailsModalProps = {
   isModalDetailsOpen: boolean;
   isClose: () => void;
-  user: User;
-  item: Item;
+  user: User | undefined;
+  item: Item | undefined;
 };
 
 export function PostDetailsModal({
@@ -73,7 +73,7 @@ export function PostDetailsModal({
             </Avatar>
             <div>
               <h3 className="font-medium">
-                {user._id === currentUserId
+                {user?._id === currentUserId
                   ? "Me"
                   : `${user?.firstName} ${user?.lastName}`}
               </h3>

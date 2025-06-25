@@ -12,7 +12,21 @@ const UserSchema = mongoose.Schema(
     },
     offeredSkills: { type: [String] },
     seekedSkills: { type: [String] },
-    reviews: { type: [String], default: [] },
+    reviews: [
+      {
+        fromUserId: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "User",
+        },
+        dealId: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "Deal",
+        },
+        rating: { type: Number },
+        review: { type: String },
+        createdAt: { type: Date, default: Date.now },
+      },
+    ],
   },
   {
     timestamps: true,

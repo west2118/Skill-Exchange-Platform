@@ -37,6 +37,28 @@ const DealSchema = mongoose.Schema(
     skillSeek: { type: String, required: true },
     status: { type: String, default: "Upcoming" },
     sessions: [SessionSchema],
+    ratings: {
+      proposerRated: {
+        hasRated: { type: Boolean, default: false },
+        userId: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "User",
+          default: null,
+        },
+        rating: { type: Number, default: 0 },
+        review: { type: String, default: "" },
+      },
+      receiverRated: {
+        hasRated: { type: Boolean, default: false },
+        userId: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "User",
+          default: null,
+        },
+        rating: { type: Number, default: 0 },
+        review: { type: String, default: "" },
+      },
+    },
   },
   { timestamps: true }
 );
