@@ -13,6 +13,7 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import ActiveDealTab from "./dealsTabs/ActiveDealTab";
 import CompletedDealTab from "./dealsTabs/CompletedDealTab";
+import CancelledDealTab from "./dealsTabs/CancelledDealTab";
 
 export default function DealStatusPage() {
   return (
@@ -43,86 +44,7 @@ export default function DealStatusPage() {
           <CompletedDealTab />
 
           {/* Cancelled/Expired Deals Tab */}
-          <TabsContent value="cancelled" className="space-y-4">
-            {/* Deal 1 */}
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between pb-3">
-                <div className="flex items-center space-x-4">
-                  <Avatar>
-                    <AvatarImage src="/avatars/jamie.jpg" />
-                    <AvatarFallback>JL</AvatarFallback>
-                  </Avatar>
-                  <div>
-                    <CardTitle>Jamie L.</CardTitle>
-                    <CardDescription>
-                      Home Cooking ↔ Gardening Help
-                    </CardDescription>
-                  </div>
-                </div>
-                <Badge variant="destructive">Cancelled</Badge>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                  <div className="space-y-2">
-                    <Label>Status</Label>
-                    <p className="font-medium">Cancelled by you</p>
-                    <p className="text-sm text-gray-600">May 15, 2023</p>
-                  </div>
-                  <div className="space-y-2">
-                    <Label>Reason</Label>
-                    <p className="font-medium">Schedule conflict</p>
-                    <p className="text-sm text-gray-600">
-                      You: "I had to travel unexpectedly"
-                    </p>
-                  </div>
-                </div>
-                <div className="mt-6 flex justify-end">
-                  <Button variant="outline">Reconnect</Button>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Deal 2 */}
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between pb-3">
-                <div className="flex items-center space-x-4">
-                  <Avatar>
-                    <AvatarImage src="/avatars/taylor.jpg" />
-                    <AvatarFallback>TM</AvatarFallback>
-                  </Avatar>
-                  <div>
-                    <CardTitle>Taylor M.</CardTitle>
-                    <CardDescription>
-                      Photography ↔ Spanish Tutoring
-                    </CardDescription>
-                  </div>
-                </div>
-                <Badge variant="outline">Expired</Badge>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                  <div className="space-y-2">
-                    <Label>Status</Label>
-                    <p className="font-medium">Expired</p>
-                    <p className="text-sm text-gray-600">April 30, 2023</p>
-                  </div>
-                  <div className="space-y-2">
-                    <Label>Reason</Label>
-                    <p className="font-medium">No response</p>
-                    <p className="text-sm text-gray-600">
-                      Taylor didn't confirm the meeting
-                    </p>
-                  </div>
-                </div>
-                <div className="mt-6 flex justify-end space-x-4">
-                  <Button variant="outline">View Original</Button>
-                  <Button className="bg-emerald-600 hover:bg-emerald-700">
-                    Start New Deal
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
+          <CancelledDealTab />
         </Tabs>
       </main>
     </div>

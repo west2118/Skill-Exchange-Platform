@@ -19,6 +19,7 @@ type Item = {
   availTimeTo: string;
   preferredTime: string;
   address: string;
+  userId: string;
 };
 
 type PostDetailsModalProps = {
@@ -35,6 +36,9 @@ export function PostDetailsModal({
   user,
 }: PostDetailsModalProps) {
   const currentUserId = useAppSelector((state) => state.user.currentUserId);
+  const users = useAppSelector((state) => state.user.users);
+
+  const currentUserInfo = users.find((user) => user._id === currentUserId);
 
   useEffect(() => {
     if (isModalDetailsOpen) {
@@ -69,11 +73,15 @@ export function PostDetailsModal({
           {/* User Profile Section */}
           <div className="flex items-center gap-4">
             <Avatar className="h-12 w-12">
-              <AvatarFallback>{user?.firstName?.charAt(0)}</AvatarFallback>
+              <AvatarFallback>
+                {item?.userId === currentUserId
+                  ? currentUserInfo?.firstName.charAt(0)
+                  : user?.firstName.charAt(0)}
+              </AvatarFallback>
             </Avatar>
             <div>
               <h3 className="font-medium">
-                {user?._id === currentUserId
+                {item?.userId === currentUserId
                   ? "Me"
                   : `${user?.firstName} ${user?.lastName}`}
               </h3>

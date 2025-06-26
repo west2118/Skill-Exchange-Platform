@@ -106,4 +106,51 @@ const cancelExchange = async (req, res) => {
   }
 };
 
-export { postExchange, getUserExchange, getAllExchange, cancelExchange };
+const rejectExchange = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { exchangeId } = req.body;
+
+    try {
+      const user = await User.findById(id);
+      if (!user) {
+        return res.status(400).json({ message: "User didn't exist" });
+      }
+
+      const exchange = await Exchange.findById(exchangeId);
+      if (!exchange) {
+        return res.status(400).json({ message: "User didn't exist" });
+      }
+
+      if (exchange.receiverId.toString() !== id.toString()) {
+        return res
+          .status(400)
+          .json({ message: "You don't have authorize in this proposal" });
+      }
+
+      const updatedExchange = await Exchange.findByIdAndUpdate(
+        exchangeId,
+        {
+          status: "Rejected",
+        },
+        { new: true }
+      );
+
+      res
+        .status(200)
+        .json({ message: "Decline Proposal Successfully!", updatedExchange });
+    } catch (error) {
+      res.status(500).json({ message: "Server error", error: error.message });
+    }
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
+
+export {
+  postExchange,
+  getUserExchange,
+  getAllExchange,
+  cancelExchange,
+  rejectExchange,
+};

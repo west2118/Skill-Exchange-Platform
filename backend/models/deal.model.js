@@ -59,6 +59,15 @@ const DealSchema = mongoose.Schema(
         review: { type: String, default: "" },
       },
     },
+    isCancelled: {
+      userId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+      },
+      reason: { type: String },
+      description: { type: String },
+      cancelledAt: { type: Date, default: Date.now },
+    },
   },
   { timestamps: true }
 );

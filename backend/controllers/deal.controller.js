@@ -60,7 +60,7 @@ const postDeal = async (req, res) => {
       { new: true }
     );
 
-    const updatedExchanges = await Exchange.find({ postId });
+    const updatedExchanges = await Exchange.find({});
 
     res.status(200).json({
       message: "Proposal Accepted Successfully!",
@@ -84,7 +84,7 @@ const getUserDeal = async (req, res) => {
 
     const userDeals = await Deal.find({
       $or: [{ proposerId: id }, { receiverId: id }],
-      status: { $ne: "Completed" },
+      status: { $nin: ["Completed", "Cancelled"] },
     });
     if (!userDeals) return;
 
@@ -284,6 +284,36 @@ const markAsCompleted = async (req, res) => {
   }
 };
 
+const cancelDeal = async (req, res) => {
+  const { id } = req.params;
+  const { dealId, reason, description } = req.body;
+
+  try {
+    const user = await User.findById(id);
+    if (!user) {
+      return res.status(400).json({ message: "User didn't exist" });
+    }
+
+    const deal = await Deal.findById(dealId);
+    if (!deal) {
+      return res.status(400).json({ message: "Deal didn't exist" });
+    }
+
+    const updatedDeal = await Deal.findByIdAndUpdate(
+      dealId,
+      { isCancelled: { userId: id, reason, description }, status: "Cancelled" },
+      { new: true }
+    );
+
+    res.status(200).json({
+      message: "Deal Cancelled Successfully!",
+      updatedDeal,
+    });
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
+
 export {
   postDeal,
   getUserDeal,
@@ -292,4 +322,5 @@ export {
   acceptDealSession,
   postReview,
   markAsCompleted,
+  cancelDeal,
 };

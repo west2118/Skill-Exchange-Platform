@@ -10,7 +10,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { Badge } from "../ui/badge";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { auth } from "@/firebase";
 import { privateApi } from "@/utils/axios";
 import { useAppSelector } from "@/hooks/useAppSelector";
@@ -24,13 +24,20 @@ const formatDateWithTime = (isoString: string) => {
   return format(date, "MMMM d, h:mm a");
 };
 
-const ChatMessages = () => {
+const ChatMessages = ({ onRefresh }: { onRefresh: () => void }) => {
   const { id: otherUserId } = useParams();
   const currentUserUid = useAppSelector((state) => state.user.currentUserUid);
   const token = useAppSelector((state) => state.user.currentUserToken);
   const users = useAppSelector((state) => state.user.users);
   const [text, setText] = useState("");
   const [messages, setMessages] = useState<any[]>([]);
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+    }
+  }, [messages]);
 
   useEffect(() => {
     const fetchMessages = async () => {
@@ -95,6 +102,7 @@ const ChatMessages = () => {
         }
       );
 
+      onRefresh();
       setMessages((prev) => [...prev, response?.data]);
       setText("");
     } catch (error: any) {
@@ -118,52 +126,56 @@ const ChatMessages = () => {
           <Badge className="ml-auto">Pending Confirmation</Badge>
         </div>
       </CardHeader>
-      <CardContent className="space-y-6 p-6">
-        {/* Message 1 */}
-        {messages?.map((item) => {
-          const otherUser = users.find(
-            (user: any) =>
-              user.uid ===
-              (item.senderId === currentUserUid
-                ? item.receiverId
-                : item.senderId)
-          );
+      <CardContent className="p-4">
+        <div
+          ref={scrollRef}
+          className="space-y-6 overflow-y-auto min-h-[500px] max-h-[500px]">
+          {/* Message 1 */}
+          {messages?.map((item) => {
+            const otherUser = users.find(
+              (user: any) =>
+                user.uid ===
+                (item.senderId === currentUserUid
+                  ? item.receiverId
+                  : item.senderId)
+            );
 
-          return (
-            <div
-              key={item._id}
-              className={`flex ${
-                item.senderId === currentUserUid ? "justify-end" : ""
-              } space-x-3`}>
-              {item.senderId !== currentUserUid && (
-                <Avatar className="h-8 w-8">
-                  <AvatarImage src="/avatars/sarah.jpg" />
-                  <AvatarFallback>{`${otherUser?.firstName.charAt(
-                    0
-                  )}${otherUser?.lastName.charAt(0)}`}</AvatarFallback>
-                </Avatar>
-              )}
-              <div>
-                <div
-                  className={`rounded-lg ${
-                    item.senderId === currentUserUid
-                      ? "bg-emerald-600 text-white"
-                      : "bg-gray-100"
-                  } p-4`}>
-                  <p>{item.text}</p>
+            return (
+              <div
+                key={item._id}
+                className={`flex ${
+                  item.senderId === currentUserUid ? "justify-end" : ""
+                } space-x-3 px-2`}>
+                {item.senderId !== currentUserUid && (
+                  <Avatar className="h-8 w-8">
+                    <AvatarImage src="/avatars/sarah.jpg" />
+                    <AvatarFallback>{`${otherUser?.firstName.charAt(
+                      0
+                    )}${otherUser?.lastName.charAt(0)}`}</AvatarFallback>
+                  </Avatar>
+                )}
+                <div>
+                  <div
+                    className={`rounded-lg ${
+                      item.senderId === currentUserUid
+                        ? "bg-emerald-600 text-white"
+                        : "bg-gray-100"
+                    } p-4`}>
+                    <p>{item.text}</p>
+                  </div>
+                  <p
+                    className={`mt-1 ${
+                      item.senderId === currentUserUid
+                        ? "justify-start"
+                        : "justify-end"
+                    } text-xs text-gray-500`}>
+                    {formatDateWithTime(item.createdAt)}
+                  </p>
                 </div>
-                <p
-                  className={`mt-1 ${
-                    item.senderId === currentUserUid
-                      ? "justify-start"
-                      : "justify-end"
-                  } text-xs text-gray-500`}>
-                  {formatDateWithTime(item.createdAt)}
-                </p>
               </div>
-            </div>
-          );
-        })}
+            );
+          })}
+        </div>
       </CardContent>
       <CardFooter className="border-t p-4">
         <form

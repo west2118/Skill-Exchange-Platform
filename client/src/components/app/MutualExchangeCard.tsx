@@ -14,8 +14,10 @@ import { useState } from "react";
 import { privateApi } from "@/utils/axios";
 import { toast } from "react-toastify";
 import { useDispatch } from "react-redux";
-import { editExchange } from "@/store/exchangeSlice";
+import { editExchange, fetchExchanges } from "@/store/exchangeSlice";
 import { PostDetailsModal } from "./PostDetailsModal";
+import { editPost } from "@/store/postSlice";
+import { addDeal } from "@/store/dealSlice";
 
 const MutualExchangeCard = ({ exchange, onRefresh }: any) => {
   const dispatch = useDispatch();
@@ -57,7 +59,31 @@ const MutualExchangeCard = ({ exchange, onRefresh }: any) => {
         }
       );
 
-      console.log(response?.data?.updatedExchange);
+      onRefresh();
+      dispatch(
+        editExchange({
+          exchangeId: exchange._id,
+          newData: response?.data?.updatedExchange,
+        })
+      );
+      toast.success(response?.data?.message);
+      setIsModalOpen(false);
+    } catch (error: any) {
+      toast.error(error.response?.data?.message || error.message);
+    }
+  };
+
+  const handleRejectProposal = async () => {
+    try {
+      const response = await privateApi.put(
+        `http://localhost:8080/api/reject-exchange/${currentUserId}`,
+        { exchangeId: exchange._id },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
       onRefresh();
       dispatch(
@@ -82,8 +108,6 @@ const MutualExchangeCard = ({ exchange, onRefresh }: any) => {
       skillSeek: exchange?.skillSeek,
     };
 
-    console.log(proposalData);
-
     try {
       const response = await privateApi.post(
         `http://localhost:8080/api/deal/${currentUserId}`,
@@ -95,6 +119,16 @@ const MutualExchangeCard = ({ exchange, onRefresh }: any) => {
         }
       );
 
+      console.log(response?.data);
+
+      dispatch(
+        editPost({
+          postId: exchange.postId,
+          newData: response?.data?.updatedPost,
+        })
+      );
+      dispatch(fetchExchanges(response?.data?.updatedExchanges));
+      dispatch(addDeal(response?.data?.newDeal));
       onRefresh();
       toast.success(response?.data?.message);
     } catch (error: any) {
@@ -119,7 +153,7 @@ const MutualExchangeCard = ({ exchange, onRefresh }: any) => {
           <div className="text-yellow-500">{exchange.rating}</div>
         </div>
       </CardContent>
-      <CardFooter className="space-x-2">
+      <CardFooter className="space-x-4">
         {/* {exchange.status === "Completed" && (
           <Button variant="outline">Leave Review</Button>
         )}
@@ -140,12 +174,20 @@ const MutualExchangeCard = ({ exchange, onRefresh }: any) => {
         {exchange.receiverId === currentUserId &&
         exchange.status === "Pending" ? (
           <div className="flex justify-between w-full">
-            <Button className="bg-red-600 hover:bg-red-700">Decline</Button>
             <div className="w-full flex items-center justify-between">
-              <Button onClick={() => setIsModalOpen(true)} variant="outline">
-                View Details
-              </Button>
-              <div className="space-x-2">
+              <div className="space-x-4">
+                <Button
+                  onClick={handleRejectProposal}
+                  className="bg-red-600 hover:bg-red-700">
+                  Decline Proposal
+                </Button>
+                <Button
+                  onClick={() => setIsModalDetailsOpen(true)}
+                  variant="outline">
+                  View Details
+                </Button>
+              </div>
+              <div className="space-x-4">
                 <Button onClick={() => setIsModalOpen(true)} variant="outline">
                   View Proposal
                 </Button>
@@ -159,7 +201,7 @@ const MutualExchangeCard = ({ exchange, onRefresh }: any) => {
           </div>
         ) : exchange.status === "Cancelled" ||
           exchange.status === "Rejected" ? (
-          <div className="space-x-2">
+          <div className="space-x-4">
             <Button className="bg-red-600 hover:bg-red-700">Delete</Button>
           </div>
         ) : (
@@ -170,7 +212,7 @@ const MutualExchangeCard = ({ exchange, onRefresh }: any) => {
                 variant="outline">
                 View Details
               </Button>
-              <div className="space-x-2 justify-end">
+              <div className="space-x-4 justify-end">
                 <Button onClick={() => setIsModalOpen(true)} variant="outline">
                   View Proposal
                 </Button>

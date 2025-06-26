@@ -1,6 +1,7 @@
 import ActiveDealCard from "@/components/app/ActiveDealCard";
 import { CardSkeletonLoading } from "@/components/app/CardSkeletonLoading";
 import { ErrorComponent } from "@/components/app/ErrorComponent";
+import LoadingSpinner from "@/components/app/LoadingSpinner";
 import { SessionModal } from "@/components/app/SessionModal";
 import { TabsContent } from "@/components/ui/tabs";
 import { useAppSelector } from "@/hooks/useAppSelector";
@@ -22,8 +23,7 @@ const ActiveDealTab = () => {
     setRefreshKey((prev) => prev + 1);
   };
 
-  if (loading)
-    return <CardSkeletonLoading count={data?.length || 3} tabValue="nearby" />;
+  if (loading) return <LoadingSpinner />;
   if (error) return <ErrorComponent message={error} />;
 
   return (

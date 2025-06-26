@@ -33,6 +33,7 @@ import { fetchExchanges } from "./store/exchangeSlice";
 import ProtectedLayout from "./utils/ProtectedLayout";
 import { SessionExchangeForm } from "./pages/SessionExchangeForm";
 import { fetchDeals } from "./store/dealSlice";
+import AdminDashboardPage from "./admin/Pages/AdminDashboardPage";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -43,6 +44,7 @@ const router = createBrowserRouter(
         <Route path="login" element={<Login />} />
 
         <Route element={<ProtectedLayout />}>
+          <Route path="admin/dashboard" element={<AdminDashboardPage />} />
           <Route path="dashboard" element={<NewsfeedPage />} />
           <Route path="onboarding" element={<OnboardingPage />} />
           <Route path="profile/:id" element={<UserProfilePage />} />

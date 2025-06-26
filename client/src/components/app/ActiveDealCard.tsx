@@ -19,6 +19,7 @@ import { privateApi } from "@/utils/axios";
 import { toast } from "react-toastify";
 import { useDispatch } from "react-redux";
 import { editDeal } from "@/store/dealSlice";
+import { CancelDealModal } from "./CancelDealModal";
 
 const ActiveDealCard = ({ active, onRefresh }: any) => {
   const navigate = useNavigate();
@@ -26,6 +27,7 @@ const ActiveDealCard = ({ active, onRefresh }: any) => {
   const token = useAppSelector((state) => state.user.currentUserToken);
   const currentUserId = useAppSelector((state) => state.user.currentUserId);
   const users = useAppSelector((state) => state.user.users);
+  const [isCancelDealModal, setIsCancelDealModal] = useState<boolean>(false);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
   const otherUserId =
@@ -177,7 +179,9 @@ const ActiveDealCard = ({ active, onRefresh }: any) => {
                 </Button>
               ) : (
                 <div className="w-full flex items-center justify-between">
-                  <Button className="bg-red-600 hover:bg-red-700">
+                  <Button
+                    onClick={() => setIsCancelDealModal(true)}
+                    className="bg-red-600 hover:bg-red-700">
                     Cancel Deal
                   </Button>
                   <div className="space-x-4">
@@ -219,7 +223,9 @@ const ActiveDealCard = ({ active, onRefresh }: any) => {
               </div>
             </div>
             <div className="mt-6 flex justify-between align-center space-x-4">
-              <Button className="bg-red-600 hover:bg-red-700">
+              <Button
+                onClick={() => setIsCancelDealModal(true)}
+                className="bg-red-600 hover:bg-red-700">
                 Cancel Deal
               </Button>
               <div className="space-x-4">
@@ -258,6 +264,13 @@ const ActiveDealCard = ({ active, onRefresh }: any) => {
         isModalOpen={isModalOpen}
         onCloseModal={() => setIsModalOpen(false)}
         dealId={active._id}
+      />
+
+      <CancelDealModal
+        isCancelModalOpen={isCancelDealModal}
+        isCancelModalClose={() => setIsCancelDealModal(false)}
+        deal={active}
+        onRefresh={onRefresh}
       />
     </Card>
   );

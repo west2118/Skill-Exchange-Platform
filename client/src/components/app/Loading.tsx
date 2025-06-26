@@ -15,7 +15,7 @@ export function Loading() {
     <div className="fixed inset-0 flex items-center justify-center bg-white z-50">
       <div className="flex flex-col items-center">
         {/* Logo and Brand Name */}
-        <div className="flex items-center space-x-2 mb-8">
+        <div className="flex items-center space-x-2 mb-4">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 24 24"

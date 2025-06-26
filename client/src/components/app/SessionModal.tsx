@@ -33,7 +33,7 @@ export function SessionModal({
   const token = useAppSelector((state) => state.user.currentUserToken);
   const currentUserId = useAppSelector((state) => state.user.currentUserId);
   const deals = useAppSelector((state) => state.deal.deals);
-  const deal = deals.find((deal) => deal._id === dealId);
+  const deal = deals.find((deal: any) => deal._id === dealId);
 
   useEffect(() => {
     if (isModalOpen) {
@@ -71,8 +71,12 @@ export function SessionModal({
   if (!modalRoot) return null;
 
   return ReactDOM.createPortal(
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-      <div className="relative max-w-2xl w-full max-h-[80vh] bg-background rounded-lg shadow-lg flex flex-col border">
+    <div
+      onClick={onCloseModal}
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+      <div
+        onClick={(e) => e.stopPropagation()}
+        className="relative max-w-2xl w-full max-h-[80vh] bg-background rounded-lg shadow-lg flex flex-col border">
         {/* Modal Header */}
         <div className="p-6 pb-4">
           <div className="flex justify-between items-start">

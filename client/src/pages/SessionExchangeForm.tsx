@@ -2,9 +2,11 @@ import LoadingSpinner from "@/components/app/LoadingSpinner";
 import SessionCard from "@/components/app/SessionCard";
 import { Button } from "@/components/ui/button";
 import { useAppSelector } from "@/hooks/useAppSelector";
+import { editDeal } from "@/store/dealSlice";
 import { privateApi } from "@/utils/axios";
 import { Plus } from "lucide-react";
 import { useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 
@@ -18,6 +20,7 @@ interface Session {
 
 export function SessionExchangeForm({ isEdit = false }: { isEdit: boolean }) {
   const { id } = useParams();
+  const dispatch = useDispatch();
   const navigate = useNavigate();
   const deals = useAppSelector((state) => state.deal.deals);
   const currentUserId = useAppSelector((state) => state.user.currentUserId);
@@ -113,8 +116,13 @@ export function SessionExchangeForm({ isEdit = false }: { isEdit: boolean }) {
         }
       );
 
+      dispatch(editDeal({ dealId: id, newData: response?.data?.updatedDeal }));
       navigate("/deals");
-      toast.success(response?.data?.message);
+      if (isEdit) {
+        toast.success("Session Edited Successfully!");
+      } else {
+        toast.success("Session Created Successfully!");
+      }
     } catch (error: any) {
       toast.error(error.response?.data?.message || error.message);
     }
@@ -161,6 +169,7 @@ export function SessionExchangeForm({ isEdit = false }: { isEdit: boolean }) {
 
           <div className="flex flex-col md:flex-row justify-end gap-3 pt-4 border-t">
             <Button
+              onClick={() => navigate(-1)}
               type="button"
               variant="outline"
               className="w-full md:w-auto">

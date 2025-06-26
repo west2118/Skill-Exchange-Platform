@@ -7,6 +7,7 @@ import {
   acceptDealSession,
   postReview,
   markAsCompleted,
+  cancelDeal,
 } from "../controllers/deal.controller.js";
 import { verifyToken } from "../middleware/verifyToken.js";
 
@@ -19,5 +20,6 @@ router.put("/session/:id", verifyToken, postSession);
 router.put("/session-deal/:id", verifyToken, acceptDealSession);
 router.put("/review/:id", verifyToken, postReview);
 router.put("/deal-completed/:id", verifyToken, markAsCompleted);
+router.put("/cancel-deal/:id", verifyToken, cancelDeal);
 
 export default router;
