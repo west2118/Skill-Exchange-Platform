@@ -1,4 +1,5 @@
 import CancelledDealCard from "@/components/app/CancelledDealCard";
+import { NoDataCard } from "@/components/app/NoDataCard";
 import { TabsContent } from "@/components/ui/tabs";
 import { useAppSelector } from "@/hooks/useAppSelector";
 import React from "react";
@@ -13,6 +14,10 @@ const CancelledDealTab = () => {
         deal.receiverId === currentUserId) &&
       deal.status === "Cancelled"
   );
+
+  if (userDeals && userDeals.length === 0) {
+    return <NoDataCard variant="cancelled-deals" />;
+  }
 
   return (
     <TabsContent value="cancelled" className="space-y-4">

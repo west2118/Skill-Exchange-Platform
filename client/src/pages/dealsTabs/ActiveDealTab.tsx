@@ -2,6 +2,7 @@ import ActiveDealCard from "@/components/app/ActiveDealCard";
 import { CardSkeletonLoading } from "@/components/app/CardSkeletonLoading";
 import { ErrorComponent } from "@/components/app/ErrorComponent";
 import LoadingSpinner from "@/components/app/LoadingSpinner";
+import { NoDataCard } from "@/components/app/NoDataCard";
 import { SessionModal } from "@/components/app/SessionModal";
 import { TabsContent } from "@/components/ui/tabs";
 import { useAppSelector } from "@/hooks/useAppSelector";
@@ -23,18 +24,25 @@ const ActiveDealTab = () => {
     setRefreshKey((prev) => prev + 1);
   };
 
-  if (loading) return <LoadingSpinner />;
-  if (error) return <ErrorComponent message={error} />;
-
   return (
     <TabsContent value="active" className="space-y-4">
-      {data?.map((active: any) => (
-        <ActiveDealCard
-          key={active._id}
-          active={active}
-          onRefresh={handleAfterPropose}
-        />
-      ))}
+      {loading ? (
+        <LoadingSpinner />
+      ) : data && error ? (
+        <ErrorComponent message={error} />
+      ) : data && data.length > 0 ? (
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          {data?.map((active: any) => (
+            <ActiveDealCard
+              key={active._id}
+              active={active}
+              onRefresh={handleAfterPropose}
+            />
+          ))}
+        </div>
+      ) : (
+        data && data.length === 0 && <NoDataCard variant="active-deals" />
+      )}
     </TabsContent>
   );
 };

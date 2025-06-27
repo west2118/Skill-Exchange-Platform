@@ -1,5 +1,13 @@
 import { createSlice } from "@reduxjs/toolkit";
 
+type Session = {
+  date: string;
+  startTime: string;
+  endTime: string;
+  location: string;
+  address: string;
+};
+
 type Deal = {
   ratings: any;
   _id: string;
@@ -10,7 +18,7 @@ type Deal = {
   skillOffer: string;
   skillSeek: string;
   status: string;
-  sessions: string[] | null;
+  sessions: Session[] | null;
   createdAt: string | Date;
   updatedAt: string | Date;
 };

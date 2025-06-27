@@ -27,6 +27,7 @@ const UserSchema = mongoose.Schema(
         createdAt: { type: Date, default: Date.now },
       },
     ],
+    isAdmin: { type: Boolean, default: false },
   },
   {
     timestamps: true,

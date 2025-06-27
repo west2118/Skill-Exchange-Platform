@@ -82,6 +82,7 @@ const ActiveDealCard = ({ active, onRefresh }: any) => {
       );
 
       onRefresh();
+      navigate("/deals?tab=completed");
       toast.success(response?.data?.message);
       dispatch(
         editDeal({
@@ -264,6 +265,7 @@ const ActiveDealCard = ({ active, onRefresh }: any) => {
         isModalOpen={isModalOpen}
         onCloseModal={() => setIsModalOpen(false)}
         dealId={active._id}
+        onRefresh={onRefresh}
       />
 
       <CancelDealModal

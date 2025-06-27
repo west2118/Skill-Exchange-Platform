@@ -48,7 +48,6 @@ mongoose
   .then(() => {
     console.log("Connected to MongoDB successfully!");
 
-    // ✅ Listen with the HTTP server (not app)
     server.listen(process.env.PORT, () => {
       console.log(
         `🚀 Server + Socket.IO running on http://localhost:${process.env.PORT}`

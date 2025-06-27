@@ -15,12 +15,15 @@ import { useEffect } from "react";
 import { privateApi } from "@/utils/axios";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
+import { editDeal } from "@/store/dealSlice";
+import { useDispatch } from "react-redux";
 
 type SessionModalProps = {
   isModalOpen: boolean;
   dealId: string;
   onCloseModal: () => void;
   otherUserId: string | undefined;
+  onRefresh?: () => void;
 };
 
 export function SessionModal({
@@ -28,8 +31,10 @@ export function SessionModal({
   dealId,
   onCloseModal,
   otherUserId,
+  onRefresh,
 }: SessionModalProps) {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const token = useAppSelector((state) => state.user.currentUserToken);
   const currentUserId = useAppSelector((state) => state.user.currentUserId);
   const deals = useAppSelector((state) => state.deal.deals);
@@ -59,6 +64,11 @@ export function SessionModal({
         }
       );
 
+      onRefresh?.();
+      onCloseModal();
+      dispatch(
+        editDeal({ dealId: deal?._id, newData: response?.data?.updatedDeal })
+      );
       toast.success(response?.data?.message);
     } catch (error: any) {
       toast.error(error.response?.data?.message || error.message);
@@ -174,7 +184,7 @@ export function SessionModal({
           </Button>
           {Array.isArray(deal?.sessions) &&
             deal.sessions.length > 0 &&
-            deal?.status === "Pending" && (
+            deal?.status === "Upcoming" && (
               <Button
                 onClick={handleSubmitExchange}
                 className="bg-green-600 hover:bg-green-700">

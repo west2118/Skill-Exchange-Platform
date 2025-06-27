@@ -27,11 +27,32 @@ const formatDateWithTime = (isoString: string) => {
 const ChatMessages = ({ onRefresh }: { onRefresh: () => void }) => {
   const { id: otherUserId } = useParams();
   const currentUserUid = useAppSelector((state) => state.user.currentUserUid);
+  const currentUserId = useAppSelector((state) => state.user.currentUserId);
   const token = useAppSelector((state) => state.user.currentUserToken);
+  const deals = useAppSelector((state) => state.deal.deals);
   const users = useAppSelector((state) => state.user.users);
+
   const [text, setText] = useState("");
   const [messages, setMessages] = useState<any[]>([]);
   const scrollRef = useRef<HTMLDivElement>(null);
+
+  const otherUser = users.find((user: any) => user.uid === otherUserId);
+
+  const deal = deals.find(
+    (deal) =>
+      deal.status !== "Completed" &&
+      deal.status !== "Cancelled" &&
+      ((deal.proposerId === currentUserId &&
+        deal.receiverId === otherUser?._id) ||
+        (deal.proposerId === otherUser?._id &&
+          deal.receiverId === currentUserId))
+  );
+
+  const yourSkill =
+    deal?.receiverId === currentUserId ? deal?.skillOffer : deal?.skillSeek;
+
+  const otherSkill =
+    deal?.receiverId === currentUserId ? deal?.skillSeek : deal?.skillOffer;
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -117,13 +138,19 @@ const ChatMessages = ({ onRefresh }: { onRefresh: () => void }) => {
         <div className="flex items-center space-x-3">
           <Avatar>
             <AvatarImage src="/avatars/sarah.jpg" />
-            <AvatarFallback>SJ</AvatarFallback>
+            <AvatarFallback>{`${otherUser?.firstName.charAt(
+              0
+            )}${otherUser?.lastName.charAt(0)}`}</AvatarFallback>
           </Avatar>
           <div>
-            <CardTitle>Sarah Johnson</CardTitle>
-            <CardDescription>Bike Repair ↔ Spanish</CardDescription>
+            <CardTitle>{`${otherUser?.firstName} ${otherUser?.lastName}`}</CardTitle>
+            {deal && (
+              <CardDescription>
+                your {yourSkill} ↔ {otherSkill}
+              </CardDescription>
+            )}
           </div>
-          <Badge className="ml-auto">Pending Confirmation</Badge>
+          {deal && <Badge className="ml-auto">{deal?.status}</Badge>}
         </div>
       </CardHeader>
       <CardContent className="p-4">
@@ -131,50 +158,40 @@ const ChatMessages = ({ onRefresh }: { onRefresh: () => void }) => {
           ref={scrollRef}
           className="space-y-6 overflow-y-auto min-h-[500px] max-h-[500px]">
           {/* Message 1 */}
-          {messages?.map((item) => {
-            const otherUser = users.find(
-              (user: any) =>
-                user.uid ===
-                (item.senderId === currentUserUid
-                  ? item.receiverId
-                  : item.senderId)
-            );
-
-            return (
-              <div
-                key={item._id}
-                className={`flex ${
-                  item.senderId === currentUserUid ? "justify-end" : ""
-                } space-x-3 px-2`}>
-                {item.senderId !== currentUserUid && (
-                  <Avatar className="h-8 w-8">
-                    <AvatarImage src="/avatars/sarah.jpg" />
-                    <AvatarFallback>{`${otherUser?.firstName.charAt(
-                      0
-                    )}${otherUser?.lastName.charAt(0)}`}</AvatarFallback>
-                  </Avatar>
-                )}
-                <div>
-                  <div
-                    className={`rounded-lg ${
-                      item.senderId === currentUserUid
-                        ? "bg-emerald-600 text-white"
-                        : "bg-gray-100"
-                    } p-4`}>
-                    <p>{item.text}</p>
-                  </div>
-                  <p
-                    className={`mt-1 ${
-                      item.senderId === currentUserUid
-                        ? "justify-start"
-                        : "justify-end"
-                    } text-xs text-gray-500`}>
-                    {formatDateWithTime(item.createdAt)}
-                  </p>
+          {messages?.map((item) => (
+            <div
+              key={item._id}
+              className={`flex ${
+                item.senderId === currentUserUid ? "justify-end" : ""
+              } space-x-3 px-2`}>
+              {item.senderId !== currentUserUid && (
+                <Avatar className="h-8 w-8">
+                  <AvatarImage src="/avatars/sarah.jpg" />
+                  <AvatarFallback>{`${otherUser?.firstName.charAt(
+                    0
+                  )}${otherUser?.lastName.charAt(0)}`}</AvatarFallback>
+                </Avatar>
+              )}
+              <div>
+                <div
+                  className={`rounded-lg ${
+                    item.senderId === currentUserUid
+                      ? "bg-emerald-600 text-white"
+                      : "bg-gray-100"
+                  } p-4`}>
+                  <p>{item.text}</p>
                 </div>
+                <p
+                  className={`mt-1 ${
+                    item.senderId === currentUserUid
+                      ? "justify-start"
+                      : "justify-end"
+                  } text-xs text-gray-500`}>
+                  {formatDateWithTime(item.createdAt)}
+                </p>
               </div>
-            );
-          })}
+            </div>
+          ))}
         </div>
       </CardContent>
       <CardFooter className="border-t p-4">

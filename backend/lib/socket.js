@@ -13,8 +13,6 @@ export const registerSocketServer = (server) => {
   });
 
   io.on("connection", (socket) => {
-    console.log("🔌 New socket connected:", socket.id);
-
     socket.on("authenticate", async (data) => {
       try {
         if (!data || !data.token) {
@@ -27,11 +25,7 @@ export const registerSocketServer = (server) => {
 
         socket.data.userId = userId;
 
-        console.log("✅ Set socket ID for user:", userId, "➡", socket.id);
-
         onlineUsers.set(userId, socket.id);
-
-        console.log(`✅ User authenticated: ${userId}`);
       } catch (err) {
         console.error("❌ Firebase token error:", err.message);
         socket.disconnect(); // safely disconnect if auth fails
@@ -42,9 +36,6 @@ export const registerSocketServer = (server) => {
       const userId = socket.data.userId;
       if (userId) {
         onlineUsers.delete(userId);
-        console.log(`🔌 User disconnected: ${userId}`);
-      } else {
-        console.log("🔌 Socket disconnected (no user ID)");
       }
     });
   });

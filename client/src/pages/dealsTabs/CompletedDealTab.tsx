@@ -1,4 +1,5 @@
 import CompletedDealCard from "@/components/app/CompletedDealCard";
+import { NoDataCard } from "@/components/app/NoDataCard";
 import { useAppSelector } from "@/hooks/useAppSelector";
 import { TabsContent } from "@radix-ui/react-tabs";
 
@@ -12,6 +13,10 @@ const CompletedDealTab = () => {
         deal.receiverId === currentUserId) &&
       deal.status === "Completed"
   );
+
+  if (userDeals && userDeals.length === 0) {
+    return <NoDataCard variant="completed-deals" />;
+  }
 
   return (
     <TabsContent value="completed" className="space-y-4">

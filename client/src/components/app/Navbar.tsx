@@ -87,7 +87,7 @@ const Navbar = () => {
               <Link to={`/messages/${data?.[0]?.uid}`}>
                 <Button variant="ghost">Messages</Button>
               </Link>
-              <Link to="/deals">
+              <Link to="/deals?tab=active">
                 <Button variant="ghost">My Deals</Button>
               </Link>
               <Link to={`/profile/${currentUser._id}`}>

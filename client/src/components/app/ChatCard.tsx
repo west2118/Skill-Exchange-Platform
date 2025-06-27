@@ -10,9 +10,25 @@ import { useNavigate, useParams } from "react-router-dom";
 const ChatCard = ({ user, refreshTrigger }: any) => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const currentUserId = useAppSelector((state) => state.user.currentUserId);
   const currentUserUid = useAppSelector((state) => state.user.currentUserUid);
+  const deals = useAppSelector((state) => state.deal.deals);
   const token = useAppSelector((state) => state.user.currentUserToken);
   const [messages, setMessages] = useState<any[]>([]);
+
+  const deal = deals.find(
+    (deal) =>
+      deal.status !== "Completed" &&
+      deal.status !== "Cancelled" &&
+      ((deal.proposerId === currentUserId && deal.receiverId === user?._id) ||
+        (deal.proposerId === user?._id && deal.receiverId === currentUserId))
+  );
+
+  const yourSkill =
+    deal?.receiverId === currentUserId ? deal?.skillOffer : deal?.skillSeek;
+
+  const otherSkill =
+    deal?.receiverId === currentUserId ? deal?.skillSeek : deal?.skillOffer;
 
   useEffect(() => {
     const fetchMessages = async () => {
@@ -67,11 +83,13 @@ const ChatCard = ({ user, refreshTrigger }: any) => {
               ? `You: ${lastMessage?.text}`
               : lastMessage?.text}
           </p>
-          <Badge
-            variant="outline"
-            className="mt-1 border-emerald-200 bg-emerald-50 text-emerald-600">
-            Bike Repair ↔ Spanish
-          </Badge>
+          {deal && (
+            <Badge
+              variant="outline"
+              className="mt-1 border-emerald-200 bg-emerald-50 text-emerald-600">
+              {yourSkill} ↔ {otherSkill}
+            </Badge>
+          )}
         </div>
       </div>
     </div>

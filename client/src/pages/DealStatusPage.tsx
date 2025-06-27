@@ -1,21 +1,17 @@
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-  CardContent,
-} from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
-import { Progress } from "@/components/ui/progress";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import ActiveDealTab from "./dealsTabs/ActiveDealTab";
 import CompletedDealTab from "./dealsTabs/CompletedDealTab";
 import CancelledDealTab from "./dealsTabs/CancelledDealTab";
+import { useSearchParams } from "react-router-dom";
 
 export default function DealStatusPage() {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const tab = searchParams.get("tab") || "active";
+
+  const handleTabChange = (value: string) => {
+    setSearchParams({ tab: value });
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100">
       {/* Main Content */}
@@ -30,21 +26,16 @@ export default function DealStatusPage() {
         </div>
 
         {/* Tabs */}
-        <Tabs defaultValue="active">
+        <Tabs value={tab} onValueChange={handleTabChange}>
           <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="active">Active</TabsTrigger>
             <TabsTrigger value="completed">Completed</TabsTrigger>
             <TabsTrigger value="cancelled">Cancelled/Expired</TabsTrigger>
           </TabsList>
 
-          {/* Active Deals Tab */}
-          <ActiveDealTab />
-
-          {/* Completed Deals Tab */}
-          <CompletedDealTab />
-
-          {/* Cancelled/Expired Deals Tab */}
-          <CancelledDealTab />
+          {tab === "active" && <ActiveDealTab />}
+          {tab === "completed" && <CompletedDealTab />}
+          {tab === "cancelled" && <CancelledDealTab />}
         </Tabs>
       </main>
     </div>

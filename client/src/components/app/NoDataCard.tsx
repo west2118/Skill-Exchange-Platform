@@ -3,7 +3,14 @@ import { Button } from "@/components/ui/button";
 import { Handshake, ListTodo, MapPin, RefreshCw, Plus } from "lucide-react";
 
 type NoDataCardProps = {
-  variant: "nearby-users" | "skill-matches" | "mutual-exchanges" | "my-posts";
+  variant:
+    | "nearby-users"
+    | "skill-matches"
+    | "mutual-exchanges"
+    | "my-posts"
+    | "active-deals"
+    | "completed-deals"
+    | "cancelled-deals";
 };
 
 export function NoDataCard({ variant }: NoDataCardProps) {
@@ -39,6 +46,29 @@ export function NoDataCard({ variant }: NoDataCardProps) {
         "You haven't created any exchange posts yet. Create your first post to start exchanging skills.",
       primaryAction: "Create Post",
       secondaryAction: "Learn More",
+    },
+    "active-deals": {
+      icon: <Handshake className="h-6 w-6 text-primary" />,
+      title: "No Active Deals",
+      description:
+        "You currently have no ongoing exchanges. Start a new one to keep learning and sharing skills.",
+      primaryAction: "Browse Skills",
+      secondaryAction: "Refresh",
+    },
+    "completed-deals": {
+      icon: <ListTodo className="h-6 w-6 text-primary" />,
+      title: "No Completed Deals",
+      description:
+        "You haven't completed any skill exchanges yet. Once you finish one, it will show up here.",
+      primaryAction: "View Active Deals",
+      secondaryAction: "Learn More",
+    },
+    "cancelled-deals": {
+      icon: <ListTodo className="h-6 w-6 text-primary" />,
+      title: "No Cancelled Deals",
+      description: "No deals have been cancelled so far. You’re doing great!",
+      primaryAction: "Check Active Deals",
+      secondaryAction: "Refresh",
     },
   };
 
