@@ -17,15 +17,11 @@ import DealStatusPage from "./pages/DealStatusPage";
 import ChatPage from "./pages/ChatPage";
 import CompletionPage from "./pages/CompletionPage";
 import { useEffect } from "react";
-import { auth } from "./firebase";
 import { useDispatch, useSelector } from "react-redux";
 import {
   fetchUsers,
   setCurrentUserId,
-  setCurrentUserToken,
-  setCurrentUserUid,
 } from "./store/userSlice";
-import { onAuthStateChanged, onIdTokenChanged } from "firebase/auth";
 import { publicApi } from "./utils/axios";
 import CreatePostPage from "./pages/CreatePostPage";
 import { fetchPosts } from "./store/postSlice";
@@ -35,6 +31,8 @@ import { SessionExchangeForm } from "./pages/SessionExchangeForm";
 import { fetchDeals } from "./store/dealSlice";
 import AdminDashboardPage from "./admin/Pages/AdminDashboardPage";
 import AdminLayout from "./admin/Components/AdminLayout";
+import { EditProfile } from "./pages/EditProfile";
+import { useAuth } from "./utils/AuthProvider";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -46,6 +44,7 @@ const router = createBrowserRouter(
 
         <Route element={<ProtectedLayout />}>
           <Route path="dashboard" element={<NewsfeedPage />} />
+          <Route path="edit-profile/:id" element={<EditProfile />} />
           <Route path="onboarding" element={<OnboardingPage />} />
           <Route path="profile/:id" element={<UserProfilePage />} />
           <Route path="deals" element={<DealStatusPage />} />
@@ -79,41 +78,16 @@ const router = createBrowserRouter(
 
 function App() {
   const dispatch = useDispatch();
-  const userUid = useSelector((state: any) => state.user.currentUserUid);
-  const users = useSelector((state: any) => state.user.users);
+  const { user: authUser } = useAuth();
 
   useEffect(() => {
-    const user = users?.find((user: any) => user.uid === userUid);
-
-    if (user) {
-      dispatch(setCurrentUserId(user._id));
+    if (authUser && authUser._id) {
+      dispatch(setCurrentUserId(authUser._id));
+    } else {
+      dispatch(setCurrentUserId(null));
     }
-  }, [userUid, users]);
+  }, [authUser, dispatch]);
 
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (user) {
-        dispatch(setCurrentUserUid(user.uid));
-      } else {
-        dispatch(setCurrentUserUid(null));
-      }
-    });
-
-    return () => unsubscribe();
-  }, []);
-
-  useEffect(() => {
-    const unsubscribe = onIdTokenChanged(auth, async (user) => {
-      if (user) {
-        const token = await user.getIdToken();
-        dispatch(setCurrentUserToken(token));
-      } else {
-        dispatch(setCurrentUserToken(null));
-      }
-    });
-
-    return () => unsubscribe();
-  }, []);
 
   useEffect(() => {
     const fetchData = async () => {

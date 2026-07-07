@@ -1,5 +1,4 @@
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
 import { useAppSelector } from "@/hooks/useAppSelector";
 
 const stars = [1, 2, 3, 4, 5];

@@ -21,7 +21,6 @@ import { addDeal } from "@/store/dealSlice";
 
 const MutualExchangeCard = ({ exchange, onRefresh }: any) => {
   const dispatch = useDispatch();
-  const token = useAppSelector((state) => state.user.currentUserToken);
   const users = useAppSelector((state: any) => state.user.users);
   const posts = useAppSelector((state: any) => state.post.posts);
   const currentUserId = useAppSelector((state) => state.user.currentUserId);
@@ -54,7 +53,6 @@ const MutualExchangeCard = ({ exchange, onRefresh }: any) => {
         { exchangeId: exchange._id },
         {
           headers: {
-            Authorization: `Bearer ${token}`,
           },
         }
       );
@@ -80,7 +78,6 @@ const MutualExchangeCard = ({ exchange, onRefresh }: any) => {
         { exchangeId: exchange._id },
         {
           headers: {
-            Authorization: `Bearer ${token}`,
           },
         }
       );
@@ -114,7 +111,6 @@ const MutualExchangeCard = ({ exchange, onRefresh }: any) => {
         { ...proposalData },
         {
           headers: {
-            Authorization: `Bearer ${token}`,
           },
         }
       );
@@ -139,7 +135,7 @@ const MutualExchangeCard = ({ exchange, onRefresh }: any) => {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>{`${yourSkill} ↔ ${otherSkill}`}</CardTitle>
+        <CardTitle>{`${yourSkill} â†” ${otherSkill}`}</CardTitle>
         <CardDescription>
           {`Between You and ${otherUser?.firstName} ${otherUser?.lastName}`}
         </CardDescription>

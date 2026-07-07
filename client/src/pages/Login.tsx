@@ -8,16 +8,18 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { auth } from "@/firebase";
-import { signInWithEmailAndPassword } from "firebase/auth";
+import { publicApi } from "@/utils/axios";
+import { useAuth } from "@/utils/AuthProvider";
+import { useDispatch } from "react-redux";
 import { useState } from "react";
-import { useSelector } from "react-redux";
+import { addUser, setCurrentUserId } from "@/store/userSlice";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
 export default function Login() {
+  const { setUser } = useAuth();
   const navigate = useNavigate();
-  const users = useSelector((state: any) => state.user.users);
+  const dispatch = useDispatch();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
@@ -25,15 +27,16 @@ export default function Login() {
     e.preventDefault();
 
     try {
-      const userCredential = await signInWithEmailAndPassword(
-        auth,
+      const response = await publicApi.post("http://localhost:8080/api/login", {
         email,
-        password
-      );
+        password,
+      });
 
-      const user = users.find(
-        (user: any) => user.uid === userCredential.user.uid
-      );
+      const user = response.data.user;
+      
+      dispatch(setCurrentUserId(user._id));
+      dispatch(addUser(user));
+      setUser(user);
 
       toast.success("Logged In Successfully");
       navigate(`/profile/${user._id}`);
@@ -43,7 +46,7 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-white flex items-center justify-center p-4">
       {/* Login Card */}
       <form className="w-full max-w-md" onSubmit={handleLogin}>
         <Card className="w-full">

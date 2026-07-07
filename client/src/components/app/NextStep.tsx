@@ -10,7 +10,7 @@ const NextStep = ({ otherUserInfo }: any) => {
       </CardHeader>
       <CardContent>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-          <Link to={`/messages/${otherUserInfo?.uid}`}>
+          <Link to={`/messages/${otherUserInfo?._id}`}>
             <Button
               variant="outline"
               className="h-24 flex-col w-full hover:bg-emerald-700 hover:text-white">

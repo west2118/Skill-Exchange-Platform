@@ -1,4 +1,4 @@
-import {
+﻿import {
   Card,
   CardContent,
   CardDescription,
@@ -6,7 +6,6 @@ import {
   CardTitle,
 } from "../ui/card";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Label } from "../ui/label";
 import { Progress } from "../ui/progress";
@@ -24,7 +23,6 @@ import { CancelDealModal } from "./CancelDealModal";
 const ActiveDealCard = ({ active, onRefresh }: any) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const token = useAppSelector((state) => state.user.currentUserToken);
   const currentUserId = useAppSelector((state) => state.user.currentUserId);
   const users = useAppSelector((state) => state.user.users);
   const [isCancelDealModal, setIsCancelDealModal] = useState<boolean>(false);
@@ -76,7 +74,6 @@ const ActiveDealCard = ({ active, onRefresh }: any) => {
         { dealId: active._id },
         {
           headers: {
-            Authorization: `Bearer ${token}`,
           },
         }
       );
@@ -108,7 +105,7 @@ const ActiveDealCard = ({ active, onRefresh }: any) => {
           <div>
             <CardTitle>{`${otherUser?.firstName} ${otherUser?.lastName}`}</CardTitle>
             <CardDescription>
-              your {yourSkill} ↔ {otherSkill}
+              your {yourSkill} â†” {otherSkill}
             </CardDescription>
           </div>
         </div>
@@ -186,7 +183,7 @@ const ActiveDealCard = ({ active, onRefresh }: any) => {
                     Cancel Deal
                   </Button>
                   <div className="space-x-4">
-                    <Link to={`/messages/${otherUser?.uid}`}>
+                    <Link to={`/messages/${otherUser?._id}`}>
                       <Button variant="outline">Message</Button>
                     </Link>
                     {active?.proposerId === currentUserId ? (
@@ -230,7 +227,7 @@ const ActiveDealCard = ({ active, onRefresh }: any) => {
                 Cancel Deal
               </Button>
               <div className="space-x-4">
-                <Link to={`/messages/${otherUser?.uid}`}>
+                <Link to={`/messages/${otherUser?._id}`}>
                   <Button variant="outline">Message</Button>
                 </Link>
                 {active?.proposerId === currentUserId ? (
@@ -261,7 +258,7 @@ const ActiveDealCard = ({ active, onRefresh }: any) => {
       </CardContent>
 
       <SessionModal
-        otherUserId={otherUser?.uid}
+        otherUserId={otherUser?._id}
         isModalOpen={isModalOpen}
         onCloseModal={() => setIsModalOpen(false)}
         dealId={active._id}

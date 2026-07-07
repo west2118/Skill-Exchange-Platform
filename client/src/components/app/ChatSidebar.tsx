@@ -5,11 +5,9 @@ import LoadingSpinner from "./LoadingSpinner";
 import ChatCard from "./ChatCard";
 
 const ChatSidebar = ({ refreshTrigger }: any) => {
-  const token = useAppSelector((state) => state.user.currentUserToken);
   const currentUserId = useAppSelector((state) => state.user.currentUserId);
   const { data, loading } = useFetchData<[]>(
-    `http://localhost:8080/api/sidebar-messages/${currentUserId}`,
-    token
+    `http://localhost:8080/api/sidebar-messages/${currentUserId}`
   );
 
   console.log(data);

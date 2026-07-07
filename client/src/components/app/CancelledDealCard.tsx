@@ -6,7 +6,6 @@ import {
   CardTitle,
 } from "../ui/card";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Label } from "../ui/label";
 import { useAppSelector } from "@/hooks/useAppSelector";
@@ -74,7 +73,7 @@ const CancelledDealCard = ({ deal }: any) => {
           </div>
         </div>
         <div className="mt-6 flex justify-end">
-          <Link to={`/messages/${otherUser?.uid}`}>
+          <Link to={`/messages/${otherUser?._id}`}>
             <Button variant="outline">Message</Button>
           </Link>
         </div>

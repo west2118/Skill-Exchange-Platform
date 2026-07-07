@@ -9,9 +9,9 @@ import {
 import { Label } from "@/components/ui/label";
 import { Input } from "../ui/input";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { skills } from "@/constants/skills";
+import { Badge } from "@/components/ui/badge";
 import type { FC } from "react";
 import { toast } from "react-toastify";
 

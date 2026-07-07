@@ -1,64 +1,15 @@
 import { Button } from "@/components/ui/button";
-import { auth } from "@/firebase";
-import { useAuthState } from "react-firebase-hooks/auth";
-import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
-import { Loading } from "./Loading";
-import { useEffect, useState } from "react";
 import { useAppSelector } from "@/hooks/useAppSelector";
 import useFetchData from "@/hooks/useFetchData";
-
-type CurrentUser = {
-  _id: string;
-  uid: string;
-  createdAt: string;
-  updatedAt: string;
-  email: string;
-  firstName: string;
-  lastName: string;
-  offeredSkills: string[];
-  seekedSkills: string[];
-  location: {
-    zip: string;
-    address: string;
-  };
-};
+import { useAuth } from "@/utils/AuthProvider";
 
 const Navbar = () => {
-  const users = useSelector((state: any) => state.user.users);
-  const [user, loading] = useAuthState(auth);
-  const [currentUser, setCurrentUser] = useState<CurrentUser | null>(null);
-  const token = useAppSelector((state) => state.user.currentUserToken);
+  const { user: currentUser } = useAuth();
   const currentUserId = useAppSelector((state) => state.user.currentUserId);
-  const { data } = useFetchData<CurrentUser[]>(
-    `http://localhost:8080/api/sidebar-messages/${currentUserId}`,
-    token
-  );
 
-  useEffect(() => {
-    if (loading) {
-      document.body.classList.add("overflow-hidden");
-    } else {
-      document.body.classList.remove("overflow-hidden");
-    }
 
-    return () => {
-      document.body.classList.remove("overflow-hidden");
-    };
-  }, [loading]);
 
-  useEffect(() => {
-    if (user) {
-      const userUid = user.uid;
-      const matchId = users.find((user: any) => user.uid === userUid);
-
-      if (matchId) {
-        setCurrentUser(matchId);
-      }
-    }
-  }, [user, users]);
-
-  if (loading) return <Loading />;
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -84,7 +35,7 @@ const Navbar = () => {
               <Link to="/dashboard?tab=nearby">
                 <Button variant="ghost">Dashboard</Button>
               </Link>
-              <Link to={`/messages/${data?.[0]?.uid}`}>
+              <Link to={`/messages/${currentUser._id}`}>
                 <Button variant="ghost">Messages</Button>
               </Link>
               <Link to="/deals?tab=active">

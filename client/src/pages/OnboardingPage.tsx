@@ -1,7 +1,7 @@
 import { Progress } from "@/components/ui/progress";
 import { useState } from "react";
 import { toast } from "react-toastify";
-import { publicApi } from "@/utils/axios";
+import { publicApi, privateApi } from "@/utils/axios";
 import LocationStep from "@/components/app/LocationStep";
 import SkillOfferStep from "@/components/app/SkillOfferStep";
 import SkillSeekStep from "@/components/app/SkillSeekStep";
@@ -9,10 +9,12 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import useAddressFromCoords from "@/hooks/useAddressFromCoords";
 import { updateUser } from "@/store/userSlice";
+import { useAuth } from "@/utils/AuthProvider";
 
 export default function OnboardingPage() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const { setUser } = useAuth();
   const currentUserToken = useSelector(
     (state: any) => state.user.currentUserToken
   );
@@ -83,21 +85,21 @@ export default function OnboardingPage() {
     };
 
     try {
-      const response = await publicApi.post(
-        "http://localhost:8080/api/user-profile",
+      const response = await privateApi.post(
+        "/user-profile",
         {
           ...addedData,
         },
         {
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${currentUserToken}`,
           },
         }
       );
 
       const data = response?.data;
 
+      setUser(data);
       dispatch(updateUser({ userId: data._id, newData: data }));
       toast.success("Created Account Successfully!");
       navigate(`/profile/${data._id}`);
@@ -110,7 +112,7 @@ export default function OnboardingPage() {
   const nextStep = () => setStep((prev) => Math.min(prev + 1, 3));
 
   return (
-    <div className="min-h-[93vh] flex items-center justify-center bg-gradient-to-b from-gray-50 to-gray-100">
+    <div className="min-h-[93vh] flex items-center justify-center bg-white">
       {/* Onboarding Content */}
       <main className="mx-auto max-w-7xl px-6 py-12 sm:px-6">
         <div className="mx-auto max-w-4xl">

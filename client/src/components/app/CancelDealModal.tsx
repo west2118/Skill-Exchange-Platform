@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/button";
+﻿import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Textarea } from "@/components/ui/textarea";
@@ -34,7 +34,6 @@ export function CancelDealModal({
   const dispatch = useDispatch();
   const [reason, setReason] = useState("");
   const [description, setDescription] = useState("");
-  const token = useAppSelector((state) => state.user.currentUserToken);
   const currentUserId = useAppSelector((state) => state.user.currentUserId);
 
   useEffect(() => {
@@ -62,7 +61,6 @@ export function CancelDealModal({
         { dealId: deal._id, reason, description },
         {
           headers: {
-            Authorization: `Bearer ${token}`,
           },
         }
       );

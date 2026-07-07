@@ -1,4 +1,3 @@
-import { getAuth, onAuthStateChanged, type User } from "firebase/auth";
 import {
   useContext,
   useEffect,
@@ -6,10 +5,12 @@ import {
   createContext,
   type ReactNode,
 } from "react";
+import { privateApi } from "./axios";
 
 type AuthContextType = {
-  user: User | null;
+  user: any | null;
   loading: boolean;
+  setUser: (user: any) => void;
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -19,21 +20,25 @@ interface AuthProviderProps {
 }
 
 export const AuthProvider = ({ children }: AuthProviderProps) => {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<any | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const auth = getAuth();
-    const unsubscribe = onAuthStateChanged(auth, (currentUser: User | null) => {
-      setUser(currentUser);
-      setLoading(false);
-    });
-
-    return () => unsubscribe();
+    const fetchUser = async () => {
+      try {
+        const response = await privateApi.get("/profile");
+        setUser(response.data);
+      } catch (error) {
+        setUser(null);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchUser();
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, loading }}>
+    <AuthContext.Provider value={{ user, loading, setUser }}>
       {children}
     </AuthContext.Provider>
   );

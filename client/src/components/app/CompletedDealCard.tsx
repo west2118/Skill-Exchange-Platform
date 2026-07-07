@@ -6,7 +6,6 @@ import {
   CardTitle,
 } from "../ui/card";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Label } from "../ui/label";
 import { useAppSelector } from "@/hooks/useAppSelector";
@@ -136,7 +135,7 @@ const CompletedDealCard = ({ deal }: any) => {
           </Button>
           {yourRating?.hasRated ? (
             <Button
-              onClick={() => navigate(`/messages/${otherUser?.uid}`)}
+              onClick={() => navigate(`/messages/${otherUser?._id}`)}
               className="bg-emerald-600 hover:bg-emerald-700">
               Message
             </Button>
@@ -151,7 +150,7 @@ const CompletedDealCard = ({ deal }: any) => {
       </CardContent>
 
       <SessionModal
-        otherUserId={otherUser?.uid}
+        otherUserId={otherUser?._id}
         isModalOpen={isModalOpen}
         onCloseModal={() => setIsModalOpen(false)}
         dealId={deal._id}

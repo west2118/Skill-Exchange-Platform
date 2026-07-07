@@ -11,7 +11,6 @@ import { Badge } from "../ui/badge";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { useEffect, useRef, useState } from "react";
-import { auth } from "@/firebase";
 import { privateApi } from "@/utils/axios";
 import { useAppSelector } from "@/hooks/useAppSelector";
 import { toast } from "react-toastify";
@@ -26,9 +25,7 @@ const formatDateWithTime = (isoString: string) => {
 
 const ChatMessages = ({ onRefresh }: { onRefresh: () => void }) => {
   const { id: otherUserId } = useParams();
-  const currentUserUid = useAppSelector((state) => state.user.currentUserUid);
   const currentUserId = useAppSelector((state) => state.user.currentUserId);
-  const token = useAppSelector((state) => state.user.currentUserToken);
   const deals = useAppSelector((state) => state.deal.deals);
   const users = useAppSelector((state) => state.user.users);
 
@@ -36,7 +33,7 @@ const ChatMessages = ({ onRefresh }: { onRefresh: () => void }) => {
   const [messages, setMessages] = useState<any[]>([]);
   const scrollRef = useRef<HTMLDivElement>(null);
 
-  const otherUser = users.find((user: any) => user.uid === otherUserId);
+  const otherUser = users.find((user: any) => user._id === otherUserId);
 
   const deal = deals.find(
     (deal) =>
@@ -62,16 +59,15 @@ const ChatMessages = ({ onRefresh }: { onRefresh: () => void }) => {
 
   useEffect(() => {
     const fetchMessages = async () => {
-      if (!token) return;
+      if (!currentUserId) return;
 
-      const roomId = [currentUserUid, otherUserId].sort().join("_");
+      const roomId = [currentUserId, otherUserId].sort().join("_");
 
       try {
         const response = await privateApi.get(
           `http://localhost:8080/api/messages/${roomId}`,
           {
             headers: {
-              Authorization: `Bearer ${token}`,
             },
           }
         );
@@ -83,12 +79,12 @@ const ChatMessages = ({ onRefresh }: { onRefresh: () => void }) => {
     };
 
     fetchMessages();
-  }, [currentUserUid, otherUserId, token]);
+  }, [currentUserId, otherUserId]);
 
   useEffect(() => {
-    if (!token) return;
+    if (!currentUserId) return;
 
-    connectSocket(token);
+    connectSocket();
     const socket = getSocket();
 
     if (!socket) return;
@@ -102,23 +98,19 @@ const ChatMessages = ({ onRefresh }: { onRefresh: () => void }) => {
     return () => {
       socket.off("newMessage", handleNewMessage); // Cleanup on unmount
     };
-  }, [token]);
+  }, [currentUserId]);
 
   const handleSendMessage = async (e: any) => {
     e.preventDefault();
-
-    const user = auth.currentUser;
-    const currentToken = await user?.getIdToken();
 
     if (!text) return;
 
     try {
       const response = await privateApi.post(
-        `http://localhost:8080/api/message/${currentUserUid}`,
+        `http://localhost:8080/api/message/${currentUserId}`,
         { text, receiverId: otherUserId },
         {
           headers: {
-            Authorization: `Bearer ${currentToken}`,
           },
         }
       );
@@ -127,7 +119,7 @@ const ChatMessages = ({ onRefresh }: { onRefresh: () => void }) => {
       setMessages((prev) => [...prev, response?.data]);
       setText("");
     } catch (error: any) {
-      console.log("❌ Send message error:", error);
+      console.log("âŒ Send message error:", error);
       toast.error(error.response?.data?.message || error.message);
     }
   };
@@ -146,7 +138,7 @@ const ChatMessages = ({ onRefresh }: { onRefresh: () => void }) => {
             <CardTitle>{`${otherUser?.firstName} ${otherUser?.lastName}`}</CardTitle>
             {deal && (
               <CardDescription>
-                your {yourSkill} ↔ {otherSkill}
+                your {yourSkill} â†” {otherSkill}
               </CardDescription>
             )}
           </div>
@@ -162,9 +154,9 @@ const ChatMessages = ({ onRefresh }: { onRefresh: () => void }) => {
             <div
               key={item._id}
               className={`flex ${
-                item.senderId === currentUserUid ? "justify-end" : ""
+                item.senderId === currentUserId ? "justify-end" : ""
               } space-x-3 px-2`}>
-              {item.senderId !== currentUserUid && (
+              {item.senderId !== currentUserId && (
                 <Avatar className="h-8 w-8">
                   <AvatarImage src="/avatars/sarah.jpg" />
                   <AvatarFallback>{`${otherUser?.firstName.charAt(
@@ -175,7 +167,7 @@ const ChatMessages = ({ onRefresh }: { onRefresh: () => void }) => {
               <div>
                 <div
                   className={`rounded-lg ${
-                    item.senderId === currentUserUid
+                    item.senderId === currentUserId
                       ? "bg-emerald-600 text-white"
                       : "bg-gray-100"
                   } p-4`}>
@@ -183,7 +175,7 @@ const ChatMessages = ({ onRefresh }: { onRefresh: () => void }) => {
                 </div>
                 <p
                   className={`mt-1 ${
-                    item.senderId === currentUserUid
+                    item.senderId === currentUserId
                       ? "justify-start"
                       : "justify-end"
                   } text-xs text-gray-500`}>

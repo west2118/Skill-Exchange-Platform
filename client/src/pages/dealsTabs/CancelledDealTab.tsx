@@ -15,15 +15,15 @@ const CancelledDealTab = () => {
       deal.status === "Cancelled"
   );
 
-  if (userDeals && userDeals.length === 0) {
-    return <NoDataCard variant="cancelled-deals" />;
-  }
-
   return (
     <TabsContent value="cancelled" className="space-y-4">
-      {userDeals?.map((deal: any) => (
-        <CancelledDealCard key={deal._id} deal={deal} />
-      ))}
+      {userDeals && userDeals.length === 0 ? (
+        <NoDataCard variant="cancelled-deals" />
+      ) : (
+        userDeals?.map((deal: any) => (
+          <CancelledDealCard key={deal._id} deal={deal} />
+        ))
+      )}
     </TabsContent>
   );
 };

@@ -8,13 +8,11 @@ import { TabsContent } from "@radix-ui/react-tabs";
 import { useState } from "react";
 
 const MatchedPost = () => {
-  const token = useAppSelector((state) => state.user.currentUserToken);
   const currentUserID = useAppSelector((state) => state.user.currentUserId);
   const [refreshKey, setRefreshKey] = useState(0);
 
-  const { data, loading, error } = useFetchData<[]>(
-    `http://localhost:8080/api/user-match/${currentUserID}`,
-    token,
+  const { data, loading, error } = useFetchData<any[]>(
+    currentUserID ? `http://localhost:8080/api/user-match/${currentUserID}` : "",
     [refreshKey]
   );
 
@@ -38,9 +36,9 @@ const MatchedPost = () => {
             />
           ))}
         </div>
-      ) : (
-        data && data.length === 0 && <NoDataCard variant="skill-matches" />
-      )}
+      ) : data && data.length === 0 ? (
+        <NoDataCard variant="skill-matches" />
+      ) : null}
     </TabsContent>
   );
 };

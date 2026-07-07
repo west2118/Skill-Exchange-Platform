@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/button";
+﻿import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { useAppSelector } from "@/hooks/useAppSelector";
 import { privateApi } from "@/utils/axios";
@@ -32,7 +32,6 @@ const ProposedModal = ({
   onRefresh,
 }: ProposedModalProps) => {
   const dispatch = useDispatch();
-  const token = useAppSelector((state) => state.user.currentUserToken);
   const currentUserId = useAppSelector((state) => state.user.currentUserId);
   const exchanges = useAppSelector((state) => state.exchange.exchanges);
   const [message, setMessage] = useState(
@@ -83,7 +82,6 @@ const ProposedModal = ({
         exchangeData,
         {
           headers: {
-            Authorization: `Bearer ${token}`,
           },
         }
       );

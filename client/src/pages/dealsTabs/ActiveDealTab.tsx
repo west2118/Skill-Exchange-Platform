@@ -1,23 +1,18 @@
 import ActiveDealCard from "@/components/app/ActiveDealCard";
-import { CardSkeletonLoading } from "@/components/app/CardSkeletonLoading";
 import { ErrorComponent } from "@/components/app/ErrorComponent";
 import LoadingSpinner from "@/components/app/LoadingSpinner";
 import { NoDataCard } from "@/components/app/NoDataCard";
-import { SessionModal } from "@/components/app/SessionModal";
 import { TabsContent } from "@/components/ui/tabs";
 import { useAppSelector } from "@/hooks/useAppSelector";
 import useFetchData from "@/hooks/useFetchData";
 import { useState } from "react";
 
 const ActiveDealTab = () => {
-  const token = useAppSelector((state) => state.user.currentUserToken);
   const currentUserID = useAppSelector((state) => state.user.currentUserId);
   const [refreshKey, setRefreshKey] = useState(0);
 
-  const { data, loading, error } = useFetchData<[]>(
-    `http://localhost:8080/api/deal/${currentUserID}`,
-    token,
-    [refreshKey]
+  const { data, loading, error } = useFetchData<any[]>(
+    currentUserID ? `http://localhost:8080/api/deal/${currentUserID}` : "", [refreshKey]
   );
 
   const handleAfterPropose = () => {
@@ -40,9 +35,9 @@ const ActiveDealTab = () => {
             />
           ))}
         </div>
-      ) : (
-        data && data.length === 0 && <NoDataCard variant="active-deals" />
-      )}
+      ) : data && data.length === 0 ? (
+        <NoDataCard variant="active-deals" />
+      ) : null}
     </TabsContent>
   );
 };

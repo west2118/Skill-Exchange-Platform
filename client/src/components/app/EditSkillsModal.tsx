@@ -1,7 +1,6 @@
-import { Label } from "@/components/ui/label";
+﻿import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { X } from "lucide-react";
 import { skills } from "@/constants/skills";
@@ -29,7 +28,6 @@ export function EditSkillsModal({
   const dispatch = useDispatch();
   const [otherSkill, setOtherSkill] = useState("");
   const [selectedSkills, setSelectedSkills] = useState<string[]>([]);
-  const token = useAppSelector((state) => state.user.currentUserToken);
   const currentUserId = useAppSelector((state) => state.user.currentUserId);
 
   useEffect(() => {
@@ -89,7 +87,6 @@ export function EditSkillsModal({
           { offeredSkills: selectedSkills },
           {
             headers: {
-              Authorization: `Bearer ${token}`,
             },
           }
         );
@@ -100,7 +97,6 @@ export function EditSkillsModal({
           {
             headers: {
               "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`,
             },
           }
         );

@@ -8,29 +8,31 @@ import {
   CardFooter,
 } from "@/components/ui/card";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
 import { useSelector } from "react-redux";
 import { formatDate } from "@/constants/formatDate";
-import SkillCard from "@/components/app/SkillCard";
 import { useNavigate, useParams } from "react-router-dom";
-import { getAuth, signOut } from "firebase/auth";
+import { privateApi } from "@/utils/axios";
 import { toast } from "react-toastify";
 import ProfileReviews from "@/components/app/ProfileReviews";
 import ProfileSkills from "@/components/app/ProfileSkills";
+import { useAppSelector } from "@/hooks/useAppSelector";
+import { useAuth } from "@/utils/AuthProvider";
 
 export default function UserProfilePage() {
   const { id } = useParams();
   const navigate = useNavigate();
   const users = useSelector((state: any) => state.user.users);
+  const currentUserId = useAppSelector((state) => state.user.currentUserId);
 
   const user = users.find((user: any) => user._id === id);
 
-  const handleLogout = async () => {
-    const auth = getAuth();
+  const { setUser } = useAuth();
 
+  const handleLogout = async () => {
     try {
-      await signOut(auth);
+      await privateApi.post("/logout");
+      setUser(null);
       navigate("/login");
     } catch (error: any) {
       toast.error(error.message);
@@ -38,7 +40,7 @@ export default function UserProfilePage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100">
+    <div className="min-h-screen bg-white">
       {/* Main Content */}
       <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
@@ -71,7 +73,10 @@ export default function UserProfilePage() {
                 </div>
               </CardContent>
               <CardFooter className="space-y-3 flex flex-col">
-                <Button variant="outline" className="w-full">
+                <Button
+                  onClick={() => navigate(`/edit-profile/${currentUserId}`)}
+                  variant="outline"
+                  className="w-full">
                   Edit Profile
                 </Button>
                 <Button

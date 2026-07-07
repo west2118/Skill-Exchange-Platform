@@ -8,13 +8,11 @@ import { TabsContent } from "@radix-ui/react-tabs";
 import { useState } from "react";
 
 const NearbyTab = () => {
-  const token = useAppSelector((state) => state.user.currentUserToken);
   const currentUserID = useAppSelector((state) => state.user.currentUserId);
   const [refreshKey, setRefreshKey] = useState(0);
 
-  const { data, loading, error } = useFetchData<[]>(
-    `http://localhost:8080/api/post/${currentUserID}`,
-    token,
+  const { data, loading, error } = useFetchData<any[]>(
+    currentUserID ? `http://localhost:8080/api/post/${currentUserID}` : "",
     [refreshKey]
   );
 
@@ -38,9 +36,9 @@ const NearbyTab = () => {
             />
           ))}
         </div>
-      ) : (
-        data && data.length === 0 && <NoDataCard variant="nearby-users" />
-      )}
+      ) : data && data.length === 0 ? (
+        <NoDataCard variant="nearby-users" />
+      ) : null}
     </TabsContent>
   );
 };

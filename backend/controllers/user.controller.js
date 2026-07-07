@@ -2,7 +2,7 @@ import User from "../models/user.model.js";
 
 const postProfile = async (req, res) => {
   try {
-    const { uid } = req.user;
+    const { id } = req.user;
     const {
       firstName,
       lastName,
@@ -12,17 +12,18 @@ const postProfile = async (req, res) => {
       seekedSkills,
     } = req.body;
 
+    const updateData = {};
+    if (firstName) updateData.firstName = firstName;
+    if (lastName) updateData.lastName = lastName;
+    if (email) updateData.email = email;
+    if (location) updateData.location = location;
+    if (offeredSkills) updateData.offeredSkills = offeredSkills;
+    if (seekedSkills) updateData.seekedSkills = seekedSkills;
+
     const user = await User.findOneAndUpdate(
-      { uid },
-      {
-        firstName,
-        lastName,
-        email,
-        location,
-        offeredSkills,
-        seekedSkills,
-      },
-      { upsert: true, new: true }
+      { _id: id },
+      { $set: updateData },
+      { new: true, runValidators: true }
     );
 
     res.status(200).json(user);

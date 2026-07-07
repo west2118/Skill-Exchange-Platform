@@ -3,16 +3,19 @@ import { useEffect, useState } from "react";
 
 const useFetchData = <T,>(
   url: string,
-  token: string | null,
   deps: any[] = []
 ) => {
   const [data, setData] = useState<T | null>(null);
-  const [loading, setLoading] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!url || !token) return;
+    if (!url) return;
 
+    setLoading(true);
+    setError(null);
+
+    let isActive = true;
     const controller = new AbortController();
 
     const fetchData = async () => {
@@ -20,15 +23,15 @@ const useFetchData = <T,>(
         setLoading(true);
         const response = await privateApi.get(url, {
           headers: {
-            Authorization: `Bearer ${token}`,
           },
           signal: controller.signal,
         });
 
-        setData(response?.data);
-        setError(null);
+        if (isActive) {
+          setData(response?.data);
+        }
       } catch (error: any) {
-        if (error.name !== "AbortError") {
+        if (isActive && error.name !== "AbortError" && error.name !== "CanceledError" && error.code !== "ERR_CANCELED") {
           const errorMessage =
             error?.response?.data?.message ||
             error?.message ||
@@ -36,16 +39,19 @@ const useFetchData = <T,>(
           setError(errorMessage);
         }
       } finally {
-        setLoading(false);
+        if (isActive) {
+          setLoading(false);
+        }
       }
     };
 
     fetchData();
 
     return () => {
+      isActive = false;
       controller.abort();
     };
-  }, [url, token, ...deps]);
+  }, [url, ...deps]);
 
   return { data, loading, error };
 };

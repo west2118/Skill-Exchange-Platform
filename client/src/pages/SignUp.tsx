@@ -9,21 +9,19 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { auth } from "@/firebase";
 import {
   addUser,
   setCurrentUserId,
-  setCurrentUserToken,
-  setCurrentUserUid,
 } from "@/store/userSlice";
+import { useAuth } from "@/utils/AuthProvider";
 import { publicApi } from "@/utils/axios";
-import { createUserWithEmailAndPassword } from "firebase/auth";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
 export default function SignUp() {
+  const { setUser } = useAuth();
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [formData, setFormData] = useState({
@@ -55,43 +53,30 @@ export default function SignUp() {
     }
 
     try {
-      const userCredentials = await createUserWithEmailAndPassword(
-        auth,
-        formData.email,
-        formData.password
-      );
-
-      const token = await userCredentials.user.getIdToken();
-
       const response = await publicApi.post(
-        "http://localhost:8080/api/user-profile",
+        "http://localhost:8080/api/register",
         {
           firstName: formData.firstName,
           lastName: formData.lastName,
           email: formData.email,
-        },
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
+          password: formData.password,
         }
       );
 
       console.log(response.data);
+      const user = response.data.user;
 
-      dispatch(setCurrentUserUid(userCredentials.user?.uid));
-      dispatch(setCurrentUserId(response?.data?._id));
-      dispatch(setCurrentUserToken(token));
-      dispatch(addUser(response?.data));
+      dispatch(setCurrentUserId(user._id));
+      dispatch(addUser(user));
+      setUser(user);
       navigate("/onboarding");
     } catch (error: any) {
-      toast.error(error.message);
+      toast.error(error.response?.data?.message || error.message);
     }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-white flex items-center justify-center p-4">
       {/* Sign Up Card */}
       <form onSubmit={handleSubmit}>
         <Card className="w-full max-w-lg">

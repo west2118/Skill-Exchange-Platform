@@ -7,11 +7,9 @@ import useFetchData from "@/hooks/useFetchData";
 import { TabsContent } from "@radix-ui/react-tabs";
 
 const MyPostTab = () => {
-  const token = useAppSelector((state) => state.user.currentUserToken);
   const currentUserID = useAppSelector((state) => state.user.currentUserId);
-  const { data, loading, error } = useFetchData<[]>(
-    `http://localhost:8080/api/user-post/${currentUserID}`,
-    token
+  const { data, loading, error } = useFetchData<any[]>(
+    currentUserID ? `http://localhost:8080/api/user-post/${currentUserID}` : ""
   );
 
   return (
@@ -26,9 +24,9 @@ const MyPostTab = () => {
             <MyPostCard key={item._id} item={item} />
           ))}
         </div>
-      ) : (
-        data && data.length === 0 && <NoDataCard variant="my-posts" />
-      )}
+      ) : data && data.length === 0 ? (
+        <NoDataCard variant="my-posts" />
+      ) : null}
     </TabsContent>
   );
 };

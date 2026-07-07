@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/button";
+﻿import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import {
   AlertCircle,
@@ -35,7 +35,6 @@ export function SessionModal({
 }: SessionModalProps) {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const token = useAppSelector((state) => state.user.currentUserToken);
   const currentUserId = useAppSelector((state) => state.user.currentUserId);
   const deals = useAppSelector((state) => state.deal.deals);
   const deal = deals.find((deal: any) => deal._id === dealId);
@@ -59,7 +58,6 @@ export function SessionModal({
         { dealId },
         {
           headers: {
-            Authorization: `Bearer ${token}`,
           },
         }
       );
@@ -95,7 +93,7 @@ export function SessionModal({
                 Session Details
               </h2>
               <p className="text-sm text-muted-foreground mt-1">
-                {deal?.skillOffer} ↔ {deal?.skillSeek}
+                {deal?.skillOffer} â†” {deal?.skillSeek}
               </p>
             </div>
             <button

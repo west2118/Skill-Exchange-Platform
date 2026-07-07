@@ -1,5 +1,5 @@
 import { Server } from "socket.io";
-import admin from "firebase-admin";
+import jwt from "jsonwebtoken";
 
 export const onlineUsers = new Map();
 
@@ -13,21 +13,30 @@ export const registerSocketServer = (server) => {
   });
 
   io.on("connection", (socket) => {
-    socket.on("authenticate", async (data) => {
+    socket.on("authenticate", async () => {
       try {
-        if (!data || !data.token) {
-          console.warn("⚠️ No token received in authenticate");
+        const cookies = socket.request.headers.cookie;
+        if (!cookies) {
+          console.warn("⚠️ No cookies received in authenticate");
           return socket.disconnect();
         }
 
-        const decoded = await admin.auth().verifyIdToken(data.token);
-        const userId = decoded.uid;
+        const cookieString = cookies.split('; ').find(row => row.startsWith('token='));
+        const token = cookieString ? cookieString.split('=')[1] : null;
+
+        if (!token) {
+          console.warn("⚠️ No token found in cookies");
+          return socket.disconnect();
+        }
+
+        const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY || "fallback_secret");
+        const userId = decoded.id;
 
         socket.data.userId = userId;
 
         onlineUsers.set(userId, socket.id);
       } catch (err) {
-        console.error("❌ Firebase token error:", err.message);
+        console.error("❌ JWT token error:", err.message);
         socket.disconnect(); // safely disconnect if auth fails
       }
     });

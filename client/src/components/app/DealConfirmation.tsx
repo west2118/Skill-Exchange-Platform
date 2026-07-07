@@ -1,4 +1,4 @@
-import { useNavigate, useParams } from "react-router-dom";
+﻿import { useNavigate, useParams } from "react-router-dom";
 import { Button } from "../ui/button";
 import {
   Card,
@@ -24,10 +24,9 @@ const DealConfirmation = () => {
   const currentUserId = useAppSelector((state) => state.user.currentUserId);
   const deals = useAppSelector((state) => state.deal.deals);
   const users = useAppSelector((state) => state.user.users);
-  const token = useAppSelector((state) => state.user.currentUserToken);
   const [isAgree, setIsAgree] = useState<boolean>(false);
 
-  const otherUser = users.find((user) => user.uid === id);
+  const otherUser = users.find((user) => user._id === id);
 
   const deal = deals.find(
     (deal) =>
@@ -56,7 +55,6 @@ const DealConfirmation = () => {
         { dealId: deal?._id },
         {
           headers: {
-            Authorization: `Bearer ${token}`,
           },
         }
       );

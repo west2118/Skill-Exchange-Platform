@@ -4,7 +4,7 @@ import express from "express";
 import cookieParser from "cookie-parser";
 import cors from "cors";
 import mongoose from "mongoose";
-import admin from "firebase-admin";
+
 import dotenv from "dotenv";
 dotenv.config();
 
@@ -20,12 +20,7 @@ import messageRoutes from "./routes/messageRoutes.js";
 import { registerSocketServer } from "./lib/socket.js";
 import { onlineUsers } from "./lib/socket.js";
 
-const require = createRequire(import.meta.url);
-const serviceAccount = require("./serviceAccountKey.json");
 
-admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount),
-});
 
 app.use(cookieParser());
 app.use(express.json());

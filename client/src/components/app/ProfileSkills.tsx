@@ -7,9 +7,9 @@ import {
   CardContent,
 } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
-import SkillCard from "@/components/app/SkillCard";
 import { EditSkillsModal } from "./EditSkillsModal";
 import { useState } from "react";
+import SkillCard from "./SkillCard";
 
 const ProfileSkills = ({ user }: any) => {
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);

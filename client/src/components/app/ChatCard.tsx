@@ -11,9 +11,7 @@ const ChatCard = ({ user, refreshTrigger }: any) => {
   const { id } = useParams();
   const navigate = useNavigate();
   const currentUserId = useAppSelector((state) => state.user.currentUserId);
-  const currentUserUid = useAppSelector((state) => state.user.currentUserUid);
   const deals = useAppSelector((state) => state.deal.deals);
-  const token = useAppSelector((state) => state.user.currentUserToken);
   const [messages, setMessages] = useState<any[]>([]);
 
   const deal = deals.find(
@@ -32,16 +30,15 @@ const ChatCard = ({ user, refreshTrigger }: any) => {
 
   useEffect(() => {
     const fetchMessages = async () => {
-      if (!token) return;
+      if (!currentUserId) return;
 
-      const roomId = [currentUserUid, user?.uid].sort().join("_");
+      const roomId = [currentUserId, user?._id].sort().join("_");
 
       try {
         const response = await privateApi.get(
           `http://localhost:8080/api/messages/${roomId}`,
           {
             headers: {
-              Authorization: `Bearer ${token}`,
             },
           }
         );
@@ -53,15 +50,15 @@ const ChatCard = ({ user, refreshTrigger }: any) => {
     };
 
     fetchMessages();
-  }, [currentUserUid, user?.uid, token, refreshTrigger]);
+  }, [currentUserId, user?._id, refreshTrigger]);
 
   const lastMessage = messages[messages.length - 1];
 
   return (
     <div
-      onClick={() => navigate(`/messages/${user?.uid}`)}
+      onClick={() => navigate(`/messages/${user?._id}`)}
       className={`${
-        user?.uid === id ? "bg-gray-100" : ""
+        user?._id === id ? "bg-gray-100" : ""
       } border-b p-4 hover:bg-gray-50 cursor-pointer w-full h-[110px] flex items-center`}>
       <div className="flex items-center space-x-3 w-full">
         <Avatar>
@@ -79,7 +76,7 @@ const ChatCard = ({ user, refreshTrigger }: any) => {
             </span>
           </div>
           <p className="text-sm text-gray-600 truncate">
-            {currentUserUid === lastMessage?.senderId
+            {currentUserId === lastMessage?.senderId
               ? `You: ${lastMessage?.text}`
               : lastMessage?.text}
           </p>
@@ -87,7 +84,7 @@ const ChatCard = ({ user, refreshTrigger }: any) => {
             <Badge
               variant="outline"
               className="mt-1 border-emerald-200 bg-emerald-50 text-emerald-600">
-              {yourSkill} ↔ {otherSkill}
+              {yourSkill} â†” {otherSkill}
             </Badge>
           )}
         </div>

@@ -24,7 +24,6 @@ export function SessionExchangeForm({ isEdit = false }: { isEdit: boolean }) {
   const navigate = useNavigate();
   const deals = useAppSelector((state) => state.deal.deals);
   const currentUserId = useAppSelector((state) => state.user.currentUserId);
-  const token = useAppSelector((state) => state.user.currentUserToken);
   const [sessionData, setSessionData] = useState({
     sessions: [
       {
@@ -111,7 +110,6 @@ export function SessionExchangeForm({ isEdit = false }: { isEdit: boolean }) {
         },
         {
           headers: {
-            Authorization: `Bearer ${token}`,
           },
         }
       );
@@ -133,7 +131,7 @@ export function SessionExchangeForm({ isEdit = false }: { isEdit: boolean }) {
   }
 
   return (
-    <div className="min-h-[94vh] bg-gradient-to-b from-gray-50 to-gray-100 flex items-center justify-center">
+    <div className="min-h-[94vh] bg-white flex items-center justify-center">
       {/* Main Content */}
       <form
         onSubmit={handleSubmit}

@@ -28,7 +28,6 @@ export default function CompletionPage() {
   const dispatch = useDispatch();
   const [rating, setRating] = useState(0);
   const [review, setReview] = useState("");
-  const token = useAppSelector((state) => state.user.currentUserToken);
   const currentUserId = useAppSelector((state) => state.user.currentUserId);
   const deals = useAppSelector((state) => state.deal.deals);
   const users = useAppSelector((state) => state.user.users);
@@ -70,7 +69,6 @@ export default function CompletionPage() {
         reviewData,
         {
           headers: {
-            Authorization: `Bearer ${token}`,
           },
         }
       );
@@ -94,7 +92,7 @@ export default function CompletionPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100">
+    <div className="min-h-screen bg-white">
       {/* Main Content */}
       <main className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-3xl space-y-8">
@@ -198,7 +196,7 @@ export default function CompletionPage() {
                           key={value}
                           onClick={() => setRating(value)}
                           className="h-10 w-10 text-2xl focus:outline-none text-yellow-400">
-                          {value <= rating ? "★" : "☆"}
+                          {value <= rating ? "â˜…" : "â˜†"}
                         </button>
                       ))}
                     </div>
