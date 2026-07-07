@@ -8,15 +8,6 @@ const postDeal = async (req, res) => {
   const { proposerId, postId, exchangeId, skillOffer, skillSeek } = req.body;
 
   try {
-    const newDeal = await Deal.create({
-      proposerId,
-      postId,
-      exchangeId,
-      skillOffer,
-      skillSeek,
-      receiverId: id,
-    });
-
     const user = await User.findById(id);
     if (!user) {
       return res.status(400).json({ message: "User didn't exist" });
@@ -37,6 +28,20 @@ const postDeal = async (req, res) => {
         .status(400)
         .json({ message: "Don't have Authorize in this proposal" });
     }
+
+    const existingDeal = await Deal.findOne({ exchangeId });
+    if (existingDeal) {
+      return res.status(400).json({ message: "Deal already exists for this proposal" });
+    }
+
+    const newDeal = await Deal.create({
+      proposerId,
+      postId,
+      exchangeId,
+      skillOffer,
+      skillSeek,
+      receiverId: id,
+    });
 
     exchange.status = "Exchanged";
     await exchange.save();
@@ -101,16 +106,16 @@ const postSession = async (req, res) => {
   try {
     const user = await User.findById(id);
     if (!user) {
-      res.status(400).json({ message: "User didn't exist" });
+      return res.status(400).json({ message: "User didn't exist" });
     }
 
     const deal = await Deal.findById(dealId);
     if (!deal) {
-      res.status(400).json({ message: "Deal cannot found" });
+      return res.status(400).json({ message: "Deal cannot found" });
     }
 
     if (deal.proposerId.toString() !== id.toString()) {
-      res
+      return res
         .status(400)
         .json({ message: "You don't have authorize in this deal" });
     }
@@ -150,16 +155,16 @@ const acceptDealSession = async (req, res) => {
   try {
     const user = await User.findById(id);
     if (!user) {
-      res.status(400).json({ message: "User didn't exist" });
+      return res.status(400).json({ message: "User didn't exist" });
     }
 
     const deal = await Deal.findById(dealId);
     if (!deal) {
-      res.status(400).json({ message: "Deal cannot found" });
+      return res.status(400).json({ message: "Deal cannot found" });
     }
 
     if (deal.receiverId.toString() !== id) {
-      res
+      return res
         .status(400)
         .json({ message: "You don't have authorize in this deal" });
     }

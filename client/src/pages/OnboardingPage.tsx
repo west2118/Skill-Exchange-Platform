@@ -23,6 +23,7 @@ export default function OnboardingPage() {
   const [zipCode, setZipCode] = useState("");
   const [otherOfferSkill, setOtherOfferSkill] = useState("");
   const [otherSeekSkill, setOtherSeekSkill] = useState("");
+  const [coordinates, setCoordinates] = useState<{ lat: number | null, lng: number | null }>({ lat: null, lng: null });
 
   const [selectedOfferSkills, setSelectedOfferSkills] = useState<string[]>([]);
   const [selectedSeekSkills, setSelectedSeekSkills] = useState<string[]>([]);
@@ -33,13 +34,14 @@ export default function OnboardingPage() {
     navigator.geolocation.getCurrentPosition(
       async (position) => {
         const { latitude, longitude } = position.coords;
+        setCoordinates({ lat: latitude, lng: longitude });
         const result = await fetchAddress(latitude, longitude);
 
-        if (result) {
-          setCurrentAddress(result.address);
-          setZipCode(result.zip);
+        if (result && !result.error) {
+          setCurrentAddress(result.address as string);
+          setZipCode(result.zip as string);
         } else {
-          toast.error(error);
+          toast.error(result?.error || "Failed to fetch location");
         }
       },
       (error) => {
@@ -80,6 +82,7 @@ export default function OnboardingPage() {
         zip: zipCode,
         address: currentAddress,
       },
+      coordinates: coordinates.lat ? coordinates : undefined,
       offeredSkills: selectedOfferSkills,
       seekedSkills: selectedSeekSkills,
     };

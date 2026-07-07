@@ -42,7 +42,6 @@ export default function CreatePostPage({ isEdit }: CreatePostPageProps) {
   const { id } = useParams();
   const currentUserId = useSelector((state: any) => state.user.currentUserId);
   const token = useSelector((state: any) => state.user.currentUserToken);
-  const userId = useSelector((state: any) => state.user.currentUserId);
   const posts = useAppSelector((state: any) => state.post.posts);
   const [selectionData, setSelectionData] = useState({
     skillSeek: "",
@@ -61,6 +60,8 @@ export default function CreatePostPage({ isEdit }: CreatePostPageProps) {
   const [selectedToDate, setSelectedToDate] = useState<Date | undefined>(
     undefined
   );
+  const [coordinates, setCoordinates] = useState<{ lat: number | null, lng: number | null }>({ lat: null, lng: null });
+  const [addressInput, setAddressInput] = useState("");
 
   useEffect(() => {
     if (isEdit && id) {
@@ -74,16 +75,21 @@ export default function CreatePostPage({ isEdit }: CreatePostPageProps) {
           : "Specific Skill",
         preferredTime: post?.preferredTime || "",
       });
-      setSelectedFromDate(post?.availTimeFrom || "");
-      setSelectedToDate(post?.availTimeTo || "");
+      setSelectedFromDate(post?.availTimeFrom ? new Date(post.availTimeFrom) : undefined);
+      setSelectedToDate(post?.availTimeTo ? new Date(post.availTimeTo) : undefined);
       formData.current.description = post?.description || "";
       formData.current.address = post?.address || "";
+      setAddressInput(post?.address || "");
       formData.current.specificSeekSkill = skills.includes(post?.skillSeek)
         ? ""
         : post?.skillSeek;
       formData.current.specificOfferSkill = skills.includes(post?.skillOffer)
         ? ""
         : post?.skillOffer;
+      setCoordinates({
+        lat: post?.coordinates?.lat || null,
+        lng: post?.coordinates?.lng || null,
+      });
     } else {
       setSelectionData({
         skillSeek: "",
@@ -94,8 +100,10 @@ export default function CreatePostPage({ isEdit }: CreatePostPageProps) {
       setSelectedToDate(undefined);
       formData.current.description = "";
       formData.current.address = "";
+      setAddressInput("");
       formData.current.specificSeekSkill = "";
       formData.current.specificOfferSkill = "";
+      setCoordinates({ lat: null, lng: null });
     }
   }, [isEdit, id, posts]);
 
@@ -122,12 +130,14 @@ export default function CreatePostPage({ isEdit }: CreatePostPageProps) {
     navigator.geolocation.getCurrentPosition(
       async (position) => {
         const { latitude, longitude } = position.coords;
+        setCoordinates({ lat: latitude, lng: longitude });
         const result = await fetchAddress(latitude, longitude);
 
-        if (result) {
-          formData.current.address = result.address;
+        if (result && !result.error) {
+          formData.current.address = result.address as string;
+          setAddressInput(result.address as string);
         } else {
-          toast.error(error);
+          toast.error(result?.error || "Failed to fetch location");
         }
       },
       (error) => {
@@ -149,6 +159,10 @@ export default function CreatePostPage({ isEdit }: CreatePostPageProps) {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
+    if (!isSpecificSeekSkill || !isSpecificOfferSkill || !formData.current.description || !selectedFromDate || !selectedToDate || !selectionData.preferredTime || !formData.current.address) {
+      return toast.error("Please fill in all required fields.");
+    }
+
     const isAlreadyFormatted = (value: any) =>
       typeof value === "string" && /\d{1,2}\/\d{1,2}\/\d{2,4}/.test(value);
 
@@ -169,6 +183,7 @@ export default function CreatePostPage({ isEdit }: CreatePostPageProps) {
         : "",
       preferredTime: selectionData.preferredTime,
       address: formData.current.address,
+      coordinates: coordinates.lat ? coordinates : undefined,
     };
 
     try {
@@ -184,7 +199,7 @@ export default function CreatePostPage({ isEdit }: CreatePostPageProps) {
         );
       } else {
         response = await privateApi.post(
-          `http://localhost:8080/api/post/${userId}`,
+          `http://localhost:8080/api/post/${currentUserId}`,
           postData,
           {
             headers: {
@@ -370,8 +385,11 @@ export default function CreatePostPage({ isEdit }: CreatePostPageProps) {
                   <div className="flex space-x-4">
                     <Input
                       name="address"
-                      defaultValue={formData.current.address}
-                      onChange={handleChange}
+                      value={addressInput}
+                      onChange={(e) => {
+                        handleChange(e);
+                        setAddressInput(e.target.value);
+                      }}
                       placeholder="Enter location or address"
                       className="flex-1"
                     />

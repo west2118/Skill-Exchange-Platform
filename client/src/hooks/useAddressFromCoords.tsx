@@ -1,4 +1,4 @@
-import { publicApi } from "@/utils/axios";
+import axios from "axios";
 import { useState } from "react";
 
 const useAddressFromCoords = () => {
@@ -10,23 +10,25 @@ const useAddressFromCoords = () => {
     setError(null);
 
     try {
-      const response = await publicApi.get(
-        `https://api.opencagedata.com/geocode/v1/json?q=${lat}+${lng}&key=${
-          import.meta.env.VITE_API_GEOCODER
-        }`
+      const response = await axios.get(
+        `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`
       );
 
-      const result = response.data.results[0];
-      const formatted = result?.formatted;
-      const postcode = result?.components?.postcode;
+      const result = response.data;
+      const formatted = result?.display_name;
+      const postcode = result?.address?.postcode;
 
-      if (formatted && postcode) {
-        return { address: formatted, zip: postcode };
+      if (formatted) {
+        return { address: formatted, zip: postcode || "" };
       } else {
-        setError("Address or ZIP not found.");
+        const msg = "Address not found.";
+        setError(msg);
+        return { error: msg };
       }
     } catch (error) {
-      setError("Failed to fetch address.");
+      const msg = "Failed to fetch address.";
+      setError(msg);
+      return { error: msg };
     } finally {
       setLoading(false);
     }

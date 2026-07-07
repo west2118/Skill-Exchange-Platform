@@ -119,7 +119,7 @@ const ChatMessages = ({ onRefresh }: { onRefresh: () => void }) => {
       setMessages((prev) => [...prev, response?.data]);
       setText("");
     } catch (error: any) {
-      console.log("âŒ Send message error:", error);
+      console.log("\u274C Send message error:", error);
       toast.error(error.response?.data?.message || error.message);
     }
   };
@@ -138,7 +138,7 @@ const ChatMessages = ({ onRefresh }: { onRefresh: () => void }) => {
             <CardTitle>{`${otherUser?.firstName} ${otherUser?.lastName}`}</CardTitle>
             {deal && (
               <CardDescription>
-                your {yourSkill} â†” {otherSkill}
+                your {yourSkill} &harr; {otherSkill}
               </CardDescription>
             )}
           </div>

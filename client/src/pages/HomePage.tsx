@@ -8,8 +8,13 @@ import {
 } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
+import { useSelector } from "react-redux";
 
 export default function HomePage() {
+  const posts = useSelector((state: any) => state.post.posts) || [];
+  const users = useSelector((state: any) => state.user.users) || [];
+  const recentPosts = [...posts].reverse().slice(0, 3);
+
   return (
     <div className="min-h-screen bg-white">
       {/* Hero Section - better centered */}
@@ -106,84 +111,49 @@ export default function HomePage() {
           </p>
         </div>
         <div className="mx-auto mt-12 grid max-w-5xl gap-6 md:grid-cols-2 lg:grid-cols-3">
-          <Card>
-            <CardHeader>
-              <div className="flex items-center space-x-3">
-                <div className="h-10 w-10 rounded-full bg-emerald-100"></div>
-                <div>
-                  <CardTitle>Sarah J.</CardTitle>
-                  <CardDescription>0.5mi away</CardDescription>
-                </div>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-2">
-                <div>
-                  <Label>Offering</Label>
-                  <p className="font-medium">Bicycle Repair</p>
-                </div>
-                <div>
-                  <Label>Seeking</Label>
-                  <p className="font-medium">Spanish Conversation Practice</p>
-                </div>
-              </div>
-              <Button variant="outline" className="mt-4 w-full">
-                View Details
-              </Button>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader>
-              <div className="flex items-center space-x-3">
-                <div className="h-10 w-10 rounded-full bg-emerald-100"></div>
-                <div>
-                  <CardTitle>Michael T.</CardTitle>
-                  <CardDescription>1.2mi away</CardDescription>
-                </div>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-2">
-                <div>
-                  <Label>Offering</Label>
-                  <p className="font-medium">Guitar Lessons</p>
-                </div>
-                <div>
-                  <Label>Seeking</Label>
-                  <p className="font-medium">Help Moving Furniture</p>
-                </div>
-              </div>
-              <Button variant="outline" className="mt-4 w-full">
-                View Details
-              </Button>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader>
-              <div className="flex items-center space-x-3">
-                <div className="h-10 w-10 rounded-full bg-emerald-100"></div>
-                <div>
-                  <CardTitle>Priya K.</CardTitle>
-                  <CardDescription>0.8mi away</CardDescription>
-                </div>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-2">
-                <div>
-                  <Label>Offering</Label>
-                  <p className="font-medium">Yoga Instruction</p>
-                </div>
-                <div>
-                  <Label>Seeking</Label>
-                  <p className="font-medium">Website Design Help</p>
-                </div>
-              </div>
-              <Button variant="outline" className="mt-4 w-full">
-                View Details
-              </Button>
-            </CardContent>
-          </Card>
+          {recentPosts.length > 0 ? (
+            recentPosts.map((post: any) => {
+              const user = users.find((u: any) => u._id === post.userId);
+              return (
+                <Card key={post._id}>
+                  <CardHeader>
+                    <div className="flex items-center space-x-3">
+                      <div className="flex h-10 w-10 items-center justify-center rounded-full bg-emerald-100 text-emerald-600 font-bold uppercase">
+                        {user?.firstName?.charAt(0) || "?"}
+                      </div>
+                      <div>
+                        <CardTitle>
+                          {user?.firstName} {user?.lastName?.charAt(0) || ""}.
+                        </CardTitle>
+                        <CardDescription className="line-clamp-1 w-40" title={post.address || "Local Area"}>
+                          {post.address || "Local Area"}
+                        </CardDescription>
+                      </div>
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-2">
+                      <div>
+                        <Label>Offering</Label>
+                        <p className="font-medium">{post.skillOffer}</p>
+                      </div>
+                      <div>
+                        <Label>Seeking</Label>
+                        <p className="font-medium">{post.skillSeek}</p>
+                      </div>
+                    </div>
+                    <Button variant="outline" className="mt-4 w-full">
+                      View Details
+                    </Button>
+                  </CardContent>
+                </Card>
+              );
+            })
+          ) : (
+            <div className="col-span-full text-center text-gray-500 py-8">
+              No recent exchanges found. Be the first to post!
+            </div>
+          )}
         </div>
       </section>
 

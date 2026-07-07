@@ -73,12 +73,14 @@ export default function UserProfilePage() {
                 </div>
               </CardContent>
               <CardFooter className="space-y-3 flex flex-col">
-                <Button
-                  onClick={() => navigate(`/edit-profile/${currentUserId}`)}
-                  variant="outline"
-                  className="w-full">
-                  Edit Profile
-                </Button>
+                {id === currentUserId && (
+                  <Button
+                    onClick={() => navigate(`/edit-profile/${currentUserId}`)}
+                    variant="outline"
+                    className="w-full">
+                    Edit Profile
+                  </Button>
+                )}
                 <Button
                   onClick={handleLogout}
                   variant="destructive"

@@ -13,13 +13,24 @@ import { Button } from "../ui/button";
 import { useSelector } from "react-redux";
 import ProposedModal from "./ProposedModal";
 import { PostDetailsModal } from "./PostDetailsModal";
+import { calculateDistance, formatDistance } from "@/utils/distanceCalculator";
 
 const MatchedPostCard = ({ match, onRefresh }: any) => {
   const [isModalDetailsOpen, setIsModalDetailsOpen] = useState<boolean>(false);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const users = useSelector((state: any) => state.user.users);
+  const currentUserId = useSelector((state: any) => state.user.currentUserId);
 
   const user = users.find((user: any) => match?.userId === user._id);
+  const currentUser = users.find((user: any) => currentUserId === user._id);
+
+  const distanceRaw = calculateDistance(
+    currentUser?.coordinates?.lat,
+    currentUser?.coordinates?.lng,
+    match?.coordinates?.lat,
+    match?.coordinates?.lng
+  );
+  const distance = formatDistance(distanceRaw);
 
   return (
     <Card key={match._id}>
@@ -30,7 +41,7 @@ const MatchedPostCard = ({ match, onRefresh }: any) => {
         </Avatar>
         <div>
           <CardTitle>{`${user?.firstName} ${user?.lastName}`}</CardTitle>
-          <CardDescription>Perfect match!</CardDescription>
+          <CardDescription>Perfect match! • {distance}</CardDescription>
         </div>
       </CardHeader>
       <CardContent>

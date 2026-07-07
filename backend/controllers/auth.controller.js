@@ -19,7 +19,7 @@ const register = async (req, res) => {
     });
 
     const accessToken = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET_KEY || "fallback_secret", { expiresIn: "15m" });
-    const refreshToken = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET_KEY || "fallback_secret", { expiresIn: "7d" });
+    const refreshToken = jwt.sign({ id: newUser._id }, process.env.JWT_REFRESH_SECRET_KEY || "refresh_fallback_secret", { expiresIn: "7d" });
 
     const expiresAt = new Date();
     expiresAt.setDate(expiresAt.getDate() + 7);
@@ -64,7 +64,7 @@ const login = async (req, res) => {
     if (!isMatch) return res.status(400).json({ message: "Invalid credentials" });
 
     const accessToken = jwt.sign({ id: user._id }, process.env.JWT_SECRET_KEY || "fallback_secret", { expiresIn: "15m" });
-    const refreshToken = jwt.sign({ id: user._id }, process.env.JWT_SECRET_KEY || "fallback_secret", { expiresIn: "7d" });
+    const refreshToken = jwt.sign({ id: user._id }, process.env.JWT_REFRESH_SECRET_KEY || "refresh_fallback_secret", { expiresIn: "7d" });
 
     const expiresAt = new Date();
     expiresAt.setDate(expiresAt.getDate() + 7);
@@ -121,7 +121,7 @@ const refreshSession = async (req, res) => {
       return res.status(401).json({ message: "Refresh token expired" });
     }
 
-    const decoded = jwt.verify(refreshToken, process.env.JWT_SECRET_KEY || "fallback_secret");
+    const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET_KEY || "refresh_fallback_secret");
     const accessToken = jwt.sign({ id: decoded.id }, process.env.JWT_SECRET_KEY || "fallback_secret", { expiresIn: "15m" });
     
     res.cookie("token", accessToken, { httpOnly: true, secure: process.env.NODE_ENV === "production", sameSite: "Strict", maxAge: 15 * 60 * 1000 });

@@ -1,4 +1,5 @@
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
 import { useAppSelector } from "@/hooks/useAppSelector";
 
 const stars = [1, 2, 3, 4, 5];
@@ -31,7 +32,7 @@ const ProfileReviewCard = ({ review }: any) => {
           <div className="flex items-center">
             {stars.map((value) => (
               <span className="text-yellow-500">
-                {value <= review?.rating ? "★" : "☆"}
+                {value <= review?.rating ? "\u2605" : "\u2606"}
               </span>
             ))}
             <span className="ml-2 text-sm text-gray-500">June 15, 2023</span>
@@ -41,7 +42,7 @@ const ProfileReviewCard = ({ review }: any) => {
       {review?.review && <p className="text-gray-700">{review?.review}</p>}
       <div className="flex space-x-2">
         <Badge variant="outline">
-          {yourSkill} ↔ {otherSkill}
+          {yourSkill} &harr; {otherSkill}
         </Badge>
       </div>
     </div>

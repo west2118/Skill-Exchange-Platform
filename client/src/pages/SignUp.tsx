@@ -76,10 +76,10 @@ export default function SignUp() {
   };
 
   return (
-    <div className="min-h-screen bg-white flex items-center justify-center p-4">
+    <div className="min-h-screen bg-white flex flex-col justify-center py-12 sm:px-6 lg:px-8">
       {/* Sign Up Card */}
-      <form onSubmit={handleSubmit}>
-        <Card className="w-full max-w-lg">
+      <form onSubmit={handleSubmit} className="sm:mx-auto sm:w-full sm:max-w-lg">
+        <Card className="w-full">
           <CardHeader className="space-y-1">
             <div className="flex items-center justify-center mb-4">
               <svg
@@ -172,35 +172,7 @@ export default function SignUp() {
               Create Account
             </Button>
 
-            {/* Divider */}
-            <div className="relative my-4">
-              <div className="absolute inset-0 flex items-center">
-                <span className="w-full border-t" />
-              </div>
-              <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-background px-2 text-muted-foreground">
-                  Or continue with
-                </span>
-              </div>
-            </div>
 
-            {/* Social Login Options */}
-            <div className="grid grid-cols-1 gap-2 w-full">
-              <Button
-                variant="outline"
-                className="flex items-center justify-center">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="16"
-                  height="16"
-                  viewBox="0 0 24 24"
-                  fill="currentColor"
-                  className="mr-2 text-red-500">
-                  <path d="M12.545 10.239v3.821h5.445c-.712 2.315-2.647 3.972-5.445 3.972-3.332 0-6.033-2.701-6.033-6.032s2.701-6.032 6.033-6.032c1.498 0 2.866.549 3.921 1.453l2.814-2.814c-1.784-1.664-4.13-2.676-6.735-2.676-5.523 0-10 4.477-10 10s4.477 10 10 10c8.396 0 10-7.496 10-10 0-.67-.069-1.325-.173-1.961h-9.827z" />
-                </svg>
-                Google
-              </Button>
-            </div>
 
             {/* Login Link */}
             <div className="text-center text-sm mt-4">

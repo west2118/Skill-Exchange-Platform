@@ -8,6 +8,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Label } from "../ui/label";
+import { Badge } from "../ui/badge";
 import { useAppSelector } from "@/hooks/useAppSelector";
 import { formatDate } from "@/constants/formatDate";
 import { Link } from "react-router-dom";
@@ -40,7 +41,7 @@ const CancelledDealCard = ({ deal }: any) => {
           <div>
             <CardTitle>{`${otherUser?.firstName} ${otherUser?.lastName}`}</CardTitle>
             <CardDescription>
-              your {yourSkill} ↔ {otherSkill}
+              your {yourSkill} &harr; {otherSkill}
             </CardDescription>
           </div>
         </div>

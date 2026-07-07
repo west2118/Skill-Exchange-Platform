@@ -84,7 +84,7 @@ const ChatCard = ({ user, refreshTrigger }: any) => {
             <Badge
               variant="outline"
               className="mt-1 border-emerald-200 bg-emerald-50 text-emerald-600">
-              {yourSkill} â†” {otherSkill}
+              {yourSkill} &harr; {otherSkill}
             </Badge>
           )}
         </div>

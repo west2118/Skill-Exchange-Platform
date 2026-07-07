@@ -12,6 +12,7 @@ const postPost = async (req, res) => {
       availTimeTo,
       preferredTime,
       address,
+      coordinates,
     } = req.body;
     const { id } = req.params;
 
@@ -24,6 +25,7 @@ const postPost = async (req, res) => {
       availTimeTo,
       preferredTime,
       address,
+      coordinates,
     });
 
     const newPost = await post.save();
@@ -36,8 +38,6 @@ const postPost = async (req, res) => {
 
 const putPost = async (req, res) => {
   const { id } = req.params;
-
-  console.log(req.body);
 
   try {
     const user = await User.findById(req.body.userId);

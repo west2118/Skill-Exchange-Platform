@@ -14,6 +14,10 @@ const PostSchema = mongoose.Schema(
     availTimeTo: { type: String, required: true },
     preferredTime: { type: String, required: true },
     address: { type: String, required: true },
+    coordinates: {
+      lat: { type: Number, default: null },
+      lng: { type: Number, default: null },
+    },
     status: { type: String, default: "Pending" },
     matchedUserId: {
       type: mongoose.Schema.Types.ObjectId,

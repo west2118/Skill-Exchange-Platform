@@ -1,4 +1,4 @@
-﻿import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import {
   AlertCircle,
@@ -92,8 +92,8 @@ export function SessionModal({
               <h2 className="text-2xl font-semibold text-gray-800">
                 Session Details
               </h2>
-              <p className="text-sm text-muted-foreground mt-1">
-                {deal?.skillOffer} â†” {deal?.skillSeek}
+              <p className="text-sm text-gray-500 mt-1">
+                {deal?.skillOffer} &harr; {deal?.skillSeek}
               </p>
             </div>
             <button

@@ -104,7 +104,7 @@ export default function CompletionPage() {
             <CardHeader>
               <CardTitle>Exchange Summary</CardTitle>
               <CardDescription>
-                Your skill exchange with Sarah Johnson
+                Your skill exchange with {`${otherUserInfo?.firstName} ${otherUserInfo?.lastName}`}
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -196,7 +196,7 @@ export default function CompletionPage() {
                           key={value}
                           onClick={() => setRating(value)}
                           className="h-10 w-10 text-2xl focus:outline-none text-yellow-400">
-                          {value <= rating ? "â˜…" : "â˜†"}
+                          {value <= rating ? "\u2605" : "\u2606"}
                         </button>
                       ))}
                     </div>

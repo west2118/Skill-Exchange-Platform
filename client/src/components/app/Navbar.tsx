@@ -27,7 +27,7 @@ const Navbar = () => {
             <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
             <polyline points="9 22 9 12 15 12 15 22"></polyline>
           </svg>
-          <span className="font-bold text-emerald-600">LocalLoop</span>
+          <Link to="/" className="font-bold text-emerald-600">LocalLoop</Link>
         </div>
         <nav className="flex items-center space-x-6">
           {currentUser && currentUser._id ? (
@@ -49,18 +49,6 @@ const Navbar = () => {
             </>
           ) : (
             <>
-              <Link to="/">
-                <Button variant="ghost">Home</Button>
-              </Link>
-              <Link to="/how-it-works">
-                <Button variant="ghost">How It Works</Button>
-              </Link>
-              <Link to="/browse-skills">
-                <Button variant="ghost">Browse Skills</Button>
-              </Link>
-              <Link to="/about">
-                <Button variant="ghost">About</Button>
-              </Link>
               <div className="space-x-4">
                 <Link to="/login">
                   <Button className="border border-emerald-700 bg-transparent text-emerald-700 hover:bg-emerald-700 hover:text-white">

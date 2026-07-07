@@ -10,6 +10,10 @@ const UserSchema = mongoose.Schema(
       zip: { type: String },
       address: { type: String },
     },
+    coordinates: {
+      lat: { type: Number, default: null },
+      lng: { type: Number, default: null },
+    },
     offeredSkills: { type: [String] },
     seekedSkills: { type: [String] },
     reviews: [

@@ -1,14 +1,16 @@
-﻿import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAppSelector } from "@/hooks/useAppSelector";
 import { updateUser } from "@/store/userSlice";
 import { privateApi } from "@/utils/axios";
-import { Home, Mail, MapPin, User } from "lucide-react";
+import { Home, Mail, MapPin, User as UserIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
+import useAddressFromCoords from "@/hooks/useAddressFromCoords";
+import type { User } from "@/store/userSlice";
 
 export function EditProfile() {
   const { id } = useParams();
@@ -24,10 +26,14 @@ export function EditProfile() {
       zip: "",
       address: "",
     },
+    coordinates: {
+      lat: null as number | null,
+      lng: null as number | null,
+    },
   });
 
   useEffect(() => {
-    const user = users.find((user: any) => user._id === id);
+    const user = users.find((user: User) => user._id === id);
     if (id) {
       setFormData({
         firstName: user?.firstName || "",
@@ -35,6 +41,10 @@ export function EditProfile() {
         location: {
           zip: user?.location.zip || "",
           address: user?.location.address || "",
+        },
+        coordinates: {
+          lat: user?.coordinates?.lat || null,
+          lng: user?.coordinates?.lng || null,
         },
       });
       setUserEmail(user?.email || "");
@@ -46,6 +56,7 @@ export function EditProfile() {
           zip: "",
           address: "",
         },
+        coordinates: { lat: null, lng: null },
       });
       setUserEmail("");
     }
@@ -59,7 +70,37 @@ export function EditProfile() {
     }));
   };
 
-  const handleSubmit = async (e: any) => {
+  const { error, loading, fetchAddress } = useAddressFromCoords();
+
+  const handleCurrentLocation = () => {
+    navigator.geolocation.getCurrentPosition(
+      async (position) => {
+        const { latitude, longitude } = position.coords;
+        const result = await fetchAddress(latitude, longitude);
+
+        if (result && !result.error) {
+          setFormData((prev) => ({
+            ...prev,
+            location: {
+              zip: result.zip as string,
+              address: result.address as string,
+            },
+            coordinates: {
+              lat: latitude,
+              lng: longitude,
+            }
+          }));
+        } else {
+          toast.error(result?.error || "Failed to fetch location");
+        }
+      },
+      (error) => {
+        toast.error(error.message);
+      }
+    );
+  };
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     try {
@@ -123,7 +164,7 @@ export function EditProfile() {
               <Label
                 htmlFor="firstName"
                 className="flex items-center gap-2 text-gray-700 dark:text-gray-300">
-                <User className="h-4 w-4" />
+                <UserIcon className="h-4 w-4" />
                 First Name
               </Label>
               <Input
@@ -138,7 +179,7 @@ export function EditProfile() {
               <Label
                 htmlFor="lastName"
                 className="flex items-center gap-2 text-gray-700 dark:text-gray-300">
-                <User className="h-4 w-4" />
+                <UserIcon className="h-4 w-4" />
                 Last Name
               </Label>
               <Input
@@ -190,6 +231,43 @@ export function EditProfile() {
                 }
                 placeholder="Enter your full address"
               />
+            </div>
+
+            <div className="md:col-span-2">
+              <Button
+                onClick={handleCurrentLocation}
+                type="button"
+                variant="outline"
+                className="w-full">
+                {loading ? (
+                  <>
+                    <svg
+                      className="animate-spin h-4 w-4 mr-2 text-muted-foreground"
+                      viewBox="0 0 24 24">
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                        fill="none"
+                      />
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8v8H4z"
+                      />
+                    </svg>
+                    Getting location...
+                  </>
+                ) : (
+                  <>
+                    <MapPin className="mr-2 h-4 w-4" />
+                    Use Current Location
+                  </>
+                )}
+              </Button>
             </div>
           </div>
 

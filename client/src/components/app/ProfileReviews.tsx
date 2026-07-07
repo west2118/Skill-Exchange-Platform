@@ -17,7 +17,7 @@ const ProfileReviews = ({ user }: any) => {
           What others say about exchanging with you
         </CardDescription>
       </CardHeader>
-      {user?.review ? (
+      {user?.reviews && user.reviews.length > 0 ? (
         <CardContent className="space-y-6">
           {user?.reviews?.map((review: any) => (
             <ProfileReviewCard key={review._id} review={review} />

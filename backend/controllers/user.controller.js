@@ -8,6 +8,7 @@ const postProfile = async (req, res) => {
       lastName,
       email,
       location,
+      coordinates,
       offeredSkills,
       seekedSkills,
     } = req.body;
@@ -17,6 +18,7 @@ const postProfile = async (req, res) => {
     if (lastName) updateData.lastName = lastName;
     if (email) updateData.email = email;
     if (location) updateData.location = location;
+    if (coordinates) updateData.coordinates = coordinates;
     if (offeredSkills) updateData.offeredSkills = offeredSkills;
     if (seekedSkills) updateData.seekedSkills = seekedSkills;
 

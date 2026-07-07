@@ -68,7 +68,7 @@ const SessionCard = ({
                   handleSessionChange(
                     index,
                     "date",
-                    date.toISOString().split("T")[0] // → "2024-06-20"
+                    format(date, "yyyy-MM-dd")
                   )
                 }
                 initialFocus
@@ -90,7 +90,7 @@ const SessionCard = ({
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor={`startTime-${index}`}>Start Time</Label>
+            <Label htmlFor={`endTime-${index}`}>End Time</Label>
             <Input
               type="time"
               value={session.endTime}

@@ -126,7 +126,7 @@ export function SessionExchangeForm({ isEdit = false }: { isEdit: boolean }) {
     }
   };
 
-  if (isEdit && sessionData.sessions.length < 0) {
+  if (isEdit && sessionData.sessions.length === 0) {
     return <LoadingSpinner />;
   }
 

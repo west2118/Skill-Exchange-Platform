@@ -1,7 +1,8 @@
-﻿import { Label } from "@/components/ui/label";
+import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Badge } from "@/components/ui/badge";
 import { X } from "lucide-react";
 import { skills } from "@/constants/skills";
 import { useEffect, useState } from "react";

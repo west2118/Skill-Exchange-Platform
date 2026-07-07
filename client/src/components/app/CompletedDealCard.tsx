@@ -8,6 +8,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Label } from "../ui/label";
+import { Badge } from "../ui/badge";
 import { useAppSelector } from "@/hooks/useAppSelector";
 import { formatDate } from "@/constants/formatDate";
 import { useNavigate } from "react-router-dom";
@@ -56,7 +57,7 @@ const CompletedDealCard = ({ deal }: any) => {
           <div>
             <CardTitle>{`${otherUser?.firstName} ${otherUser?.lastName}`}</CardTitle>
             <CardDescription>
-              your {yourSkill} ↔ {otherSkill}
+              your {yourSkill} &harr; {otherSkill}
             </CardDescription>
           </div>
         </div>
@@ -85,7 +86,7 @@ const CompletedDealCard = ({ deal }: any) => {
                         ? "text-yellow-500"
                         : "text-gray-500"
                     } text-2xl`}>
-                    ★
+                    {"\u2605"}
                   </span>
                 ))}
                 <span className="ml-2 text-sm text-gray-600">
@@ -94,7 +95,7 @@ const CompletedDealCard = ({ deal }: any) => {
               </div>
             ) : (
               <div className="flex items-center">
-                <span className="text-gray-300 text-2xl">★★★★★</span>
+                <span className="text-gray-300 text-2xl">{"\u2605\u2605\u2605\u2605\u2605"}</span>
                 <span className="ml-2 text-sm text-muted-foreground italic">
                   You haven't rated this deal yet.
                 </span>
@@ -112,7 +113,7 @@ const CompletedDealCard = ({ deal }: any) => {
                         ? "text-yellow-500"
                         : "text-gray-500"
                     } text-2xl`}>
-                    ★
+                    {"\u2605"}
                   </span>
                 ))}
                 <span className="ml-2 text-sm text-gray-600">
@@ -121,7 +122,7 @@ const CompletedDealCard = ({ deal }: any) => {
               </div>
             ) : (
               <div className="flex items-center">
-                <span className="text-gray-300 text-2xl">★★★★★</span>
+                <span className="text-gray-300 text-2xl">{"\u2605\u2605\u2605\u2605\u2605"}</span>
                 <span className="ml-2 text-sm text-muted-foreground italic">
                   Your partner haven't rated this deal yet.
                 </span>

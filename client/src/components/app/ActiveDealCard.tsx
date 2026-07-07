@@ -1,10 +1,11 @@
-﻿import {
+import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
 } from "../ui/card";
+import { Badge } from "../ui/badge";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Label } from "../ui/label";
@@ -19,12 +20,16 @@ import { toast } from "react-toastify";
 import { useDispatch } from "react-redux";
 import { editDeal } from "@/store/dealSlice";
 import { CancelDealModal } from "./CancelDealModal";
+import { calculateDistance, formatDistance } from "@/utils/distanceCalculator";
+import type { User } from "@/store/userSlice";
+import type { Post } from "@/store/postSlice";
 
-const ActiveDealCard = ({ active, onRefresh }: any) => {
+const ActiveDealCard = ({ active, onRefresh }: { active: any, onRefresh: () => void }) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const currentUserId = useAppSelector((state) => state.user.currentUserId);
   const users = useAppSelector((state) => state.user.users);
+  const posts = useAppSelector((state) => state.post.posts);
   const [isCancelDealModal, setIsCancelDealModal] = useState<boolean>(false);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
@@ -33,7 +38,17 @@ const ActiveDealCard = ({ active, onRefresh }: any) => {
       ? active?.proposerId
       : active?.receiverId;
 
-  const otherUser = users.find((user: any) => user._id === otherUserId);
+  const otherUser = users.find((user: User) => user._id === otherUserId);
+  const proposer = users.find((user: User) => user._id === active.proposerId);
+  const dealPost = posts.find((p: Post) => p._id === active.postId);
+
+  const distanceRaw = calculateDistance(
+    proposer?.coordinates?.lat ?? 0,
+    proposer?.coordinates?.lng ?? 0,
+    dealPost?.coordinates?.lat ?? 0,
+    dealPost?.coordinates?.lng ?? 0,
+  );
+  const distance = formatDistance(distanceRaw);
 
   const yourSkill =
     active?.receiverId === currentUserId
@@ -105,7 +120,7 @@ const ActiveDealCard = ({ active, onRefresh }: any) => {
           <div>
             <CardTitle>{`${otherUser?.firstName} ${otherUser?.lastName}`}</CardTitle>
             <CardDescription>
-              your {yourSkill} â†” {otherSkill}
+              your {yourSkill} &harr; {otherSkill} • {distance}
             </CardDescription>
           </div>
         </div>
@@ -122,10 +137,10 @@ const ActiveDealCard = ({ active, onRefresh }: any) => {
                 <p className="font-medium">
                   {nextSession
                     ? new Date(nextSession.date).toLocaleDateString(undefined, {
-                        weekday: "long",
-                        month: "long",
-                        day: "numeric",
-                      })
+                      weekday: "long",
+                      month: "long",
+                      day: "numeric",
+                    })
                     : ""}
                 </p>
                 <p className="text-sm text-gray-600">
@@ -176,13 +191,13 @@ const ActiveDealCard = ({ active, onRefresh }: any) => {
                   Mark As Completed
                 </Button>
               ) : (
-                <div className="w-full flex items-center justify-between">
+                <div className="w-full flex flex-wrap items-center justify-between gap-4">
                   <Button
                     onClick={() => setIsCancelDealModal(true)}
                     className="bg-red-600 hover:bg-red-700">
                     Cancel Deal
                   </Button>
-                  <div className="space-x-4">
+                  <div className="flex flex-wrap items-center gap-4">
                     <Link to={`/messages/${otherUser?._id}`}>
                       <Button variant="outline">Message</Button>
                     </Link>
@@ -220,13 +235,13 @@ const ActiveDealCard = ({ active, onRefresh }: any) => {
                 </div>
               </div>
             </div>
-            <div className="mt-6 flex justify-between align-center space-x-4">
+            <div className="mt-6 flex flex-wrap justify-between items-center gap-4">
               <Button
                 onClick={() => setIsCancelDealModal(true)}
                 className="bg-red-600 hover:bg-red-700">
                 Cancel Deal
               </Button>
-              <div className="space-x-4">
+              <div className="flex flex-wrap items-center gap-4">
                 <Link to={`/messages/${otherUser?._id}`}>
                   <Button variant="outline">Message</Button>
                 </Link>

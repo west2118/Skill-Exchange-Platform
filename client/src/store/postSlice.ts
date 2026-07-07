@@ -1,6 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-type Post = {
+export type Post = {
   _id: string;
   userId: string;
   skillSeek: string;
@@ -10,6 +10,10 @@ type Post = {
   availTimeTo: string;
   preferredTime: string;
   address: string;
+  coordinates?: {
+    lat: number;
+    lng: number;
+  };
   status: string;
   matchedUserId: string | null;
   createdAt: string;

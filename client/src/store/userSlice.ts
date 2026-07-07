@@ -1,6 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-type User = {
+export type User = {
   _id: string;
   createdAt: string;
   updatedAt: string;
@@ -12,6 +12,10 @@ type User = {
   location: {
     zip: string;
     address: string;
+  };
+  coordinates?: {
+    lat: number;
+    lng: number;
   };
 };
 

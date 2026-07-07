@@ -18,6 +18,7 @@ import { editExchange, fetchExchanges } from "@/store/exchangeSlice";
 import { PostDetailsModal } from "./PostDetailsModal";
 import { editPost } from "@/store/postSlice";
 import { addDeal } from "@/store/dealSlice";
+import { calculateDistance, formatDistance } from "@/utils/distanceCalculator";
 
 const MutualExchangeCard = ({ exchange, onRefresh }: any) => {
   const dispatch = useDispatch();
@@ -35,6 +36,15 @@ const MutualExchangeCard = ({ exchange, onRefresh }: any) => {
       : exchange.receiverId;
 
   const otherUser = users.find((user: any) => user._id === otherUserId);
+  const proposer = users.find((user: any) => user._id === exchange.proposerId);
+
+  const distanceRaw = calculateDistance(
+    proposer?.coordinates?.lat,
+    proposer?.coordinates?.lng,
+    post?.coordinates?.lat,
+    post?.coordinates?.lng
+  );
+  const distance = formatDistance(distanceRaw);
 
   const yourSkill =
     exchange.receiverId === currentUserId
@@ -135,9 +145,9 @@ const MutualExchangeCard = ({ exchange, onRefresh }: any) => {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>{`${yourSkill} â†” ${otherSkill}`}</CardTitle>
+        <CardTitle>{`${yourSkill} \u2194 ${otherSkill}`}</CardTitle>
         <CardDescription>
-          {`Between You and ${otherUser?.firstName} ${otherUser?.lastName}`}
+          {`Between You and ${otherUser?.firstName} ${otherUser?.lastName}`} • {distance}
         </CardDescription>
       </CardHeader>
       <CardContent>
